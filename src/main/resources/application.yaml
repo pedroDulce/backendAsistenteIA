@@ -1,0 +1,30 @@
+spring:
+  server: 8080
+
+  datasource:
+    url: jdbc:h2:mem:qacatalogdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+app:
+  ollama:
+    base-url: http://localhost:11434
+  openai:
+    api-key: ${OPENAI_API_KEY:demo-key}
