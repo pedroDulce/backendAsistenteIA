@@ -1,12 +1,12 @@
 -- Insertar aplicaciones de prueba (SIN especificar IDs)
 INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
-('App Web Corporativa', 'Aplicación web principal de la empresa', 'Equipo Frontend', 'ACTIVA');
+('HARA', 'Aplicación web principal de la empresa', 'Equipo HARA', 'ACTIVA');
 
 INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
-('API Gestión Usuarios', 'Microservicio para gestión de usuarios', 'Equipo Backend', 'ACTIVA');
+('MARE', 'Aplicación para gestión de componentes de aplicaciones', 'Equipo MARE', 'ACTIVA');
 
 INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
-('Mobile App iOS', 'Aplicación móvil para iOS', 'Equipo Mobile', 'EN_DESARROLLO');
+('MACA', 'Aplicación para gestión del Catálogo de aplicaciones y sus itinerarios de Calidad', 'Equipo MACA', 'EN_DESARROLLO');
 
 -- Insertar elementos promocionables (SIN IDs)
 INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
@@ -20,13 +20,13 @@ INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VA
 
 -- Insertar itinerarios QA (SIN IDs)
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA Login V2', '2024-01-01', '2024-12-31', 'ACTIVO', 1);
+('QA MARE', '2024-01-01', '2024-12-31', 'ACTIVO', 1);
 
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA Dashboard', '2024-01-01', '2024-12-31', 'ACTIVO', 2);
+('QA HARA', '2024-01-01', '2024-12-31', 'ACTIVO', 2);
 
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA API Users', '2024-01-01', '2024-12-31', 'ACTIVO', 3);
+('QA MACA', '2024-01-01', '2024-12-31', 'ACTIVO', 3);
 
 -- Insertar actividades QA (SIN IDs)
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
