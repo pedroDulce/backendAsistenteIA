@@ -12,7 +12,7 @@ public interface AplicacionRepository extends JpaRepository<Aplicacion, Long> {
 
     @Query("SELECT a, AVG(ac.porcentajeCompletado) as cobertura " +
             "FROM Aplicacion a " +
-            "JOIN a.elementosPromocionables ep " +
+            "LEFT JOIN a.elementosPromocionables ep " +
             "JOIN ep.itinerarios i " +
             "JOIN i.actividades ac " +
             //"WHERE " + //i.estado = 'ACTIVO' " +
