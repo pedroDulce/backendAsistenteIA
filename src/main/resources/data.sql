@@ -10,23 +10,35 @@ INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
 
 -- Insertar elementos promocionables (SIN IDs)
 INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
-('Login V2', 'Nueva versión del sistema de login', 'FEATURE', 1);
+('EP 1 de HARA', 'EP 1 de HARA', 'FEATURE', 1);
 
 INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
-('Dashboard Admin', 'Panel de administración', 'FEATURE', 1);
+('EP 2 de HARA', 'EP 1 de HARA', 'FEATURE', 1);
 
 INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
-('Endpoint Users', 'API REST para usuarios', 'API', 2);
+('EP 1 de MARE', 'EP 1 de MARE', 'API', 2);
+
+INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
+('EP 2 de MARE', 'EP 2 de MARE', 'API', 2);
+
+INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VALUES
+('EP 1 de MACA', 'EP 1 de MACA', 'API', 3);
 
 -- Insertar itinerarios QA (SIN IDs)
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA MARE', '2024-01-01', '2024-12-31', 'ACTIVO', 1);
+('QA HARA1', '2024-01-01', '2024-12-31', 'ACTIVO', 1);
 
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA HARA', '2024-01-01', '2024-12-31', 'ACTIVO', 2);
+('QA HARA2', '2024-01-01', '2024-12-31', 'ACTIVO', 2);
 
 INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
-('QA MACA', '2024-01-01', '2024-12-31', 'ACTIVO', 3);
+('QA MARE1', '2024-01-01', '2024-12-31', 'ACTIVO', 3);
+
+INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+('QA MARE2', '2024-01-01', '2024-12-31', 'ACTIVO', 4);
+
+INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+('QA MACA1', '2024-01-01', '2024-12-31', 'ACTIVO', 5);
 
 -- Insertar actividades QA (SIN IDs)
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
@@ -46,3 +58,9 @@ INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, esta
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
 ('Pruebas API', 'Tests de endpoints', 'API', 95.0, 'COMPLETADA', 3);
+
+INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
+('Pruebas API', 'Tests de endpoints', 'API', 65.0, 'COMPLETADA', 4);
+
+INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
+('Pruebas API', 'Tests de endpoints', 'API', 75.0, 'COMPLETADA', 5);
