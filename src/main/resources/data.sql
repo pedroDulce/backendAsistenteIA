@@ -1,6 +1,6 @@
 -- Insertar aplicaciones de prueba (SIN especificar IDs)
 INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
-('HARA', 'Aplicación web principal de la empresa', 'Equipo HARA', 'ACTIVA');
+('HARA', 'Aplicación de monitorización y comparativa de las versiones en los entornos corporativos', 'Equipo HARA', 'ACTIVA');
 
 INSERT INTO aplicacion (nombre, descripcion, equipo_responsable, estado) VALUES
 ('MARE', 'Aplicación para gestión de componentes de aplicaciones', 'Equipo MARE', 'ACTIVA');
