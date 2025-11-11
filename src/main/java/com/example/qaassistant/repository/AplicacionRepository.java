@@ -15,7 +15,7 @@ public interface AplicacionRepository extends JpaRepository<Aplicacion, Long> {
             "JOIN a.elementosPromocionables ep " +
             "JOIN ep.itinerarios i " +
             "JOIN i.actividades ac " +
-            "WHERE i.estado = 'ACTIVO' " +
+            "WHERE " + //i.estado = 'ACTIVO' " +
             "GROUP BY a " +
             "ORDER BY cobertura DESC")
     List<Object[]> findRankingCobertura();
