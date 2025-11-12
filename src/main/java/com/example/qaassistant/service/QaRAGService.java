@@ -336,7 +336,7 @@ public class QaRAGService {
         }
 
         for (Map.Entry<String, List<Map<String, Object>>> appEntry : groupedByApp.entrySet()) {
-            sb.append("🏢 **ActividadQA: ").append(appEntry.getKey()).append("**\n\n");
+            sb.append("🏢 **Aplicación: ").append(appEntry.getKey()).append("**\n\n");
 
             // Agrupar por itinerario dentro de cada aplicación
             Map<String, List<Map<String, Object>>> groupedByItinerario = new LinkedHashMap<>();
