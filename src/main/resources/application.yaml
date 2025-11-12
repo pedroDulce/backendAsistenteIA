@@ -23,8 +23,11 @@ spring:
       enabled: true
       path: /h2-console
 
-app:
-  ollama:
-    base-url: http://localhost:11434
-  openai:
-    api-key: ${OPENAI_API_KEY:demo-key}
+  # Logging para debugging
+logging.level.com.example: DEBUG
+
+ollama:
+  base-url: http://localhost:11434
+  default-model: llama3.2:3b
+#openai:
+#  api-key: ${OPENAI_API_KEY:demo-key}
