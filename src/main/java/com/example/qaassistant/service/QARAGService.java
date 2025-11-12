@@ -3,7 +3,7 @@ package com.example.qaassistant.service;
 import com.example.qaassistant.controller.ChatResponse;
 import com.example.qaassistant.controller.SourceDTO;
 import com.example.qaassistant.model.ConocimientoRAG;
-import com.example.qaassistant.model.DataInitializer;
+import com.example.qaassistant.model.DataInitializerOld;
 import com.example.qaassistant.repository.ConocimientoRAGRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
@@ -20,11 +20,11 @@ public class QARAGService {
     private VectorDBCleaner vectorDBCleaner;
     private final ConocimientoRAGRepository conocimientoRepo;
     private final EmbeddingService embeddingService;
-    private final DataInitializer dataInitializer;
+    private final DataInitializerOld dataInitializer;
 
     public QARAGService(ConocimientoRAGRepository conocimientoRepo,
                         EmbeddingService embeddingService,
-                        DataInitializer dataInitializer,
+                        DataInitializerOld dataInitializer,
                         VectorDBCleaner vectorDBCleaner) {
         this.conocimientoRepo = conocimientoRepo;
         this.embeddingService = embeddingService;

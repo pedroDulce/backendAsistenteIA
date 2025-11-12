@@ -1,5 +1,6 @@
 package com.example.qaassistant.service;
 
+import com.example.qaassistant.model.KnowledgeDocument;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +44,16 @@ public class EmbeddingService {
         }
 
         return (float) (dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2)));
+    }
+
+    public void indexDocuments(List<KnowledgeDocument> documents) {
+        // Aquí va tu lógica específica para indexar en tu vector store
+        System.out.println("📚 Indexando " + documents.size() + " documentos...");
+
+        for (KnowledgeDocument doc : documents) {
+            System.out.println(" - " + doc.getContent().substring(0, Math.min(50, doc.getContent().length())) + "...");
+            // Tu lógica de indexación aquí
+        }
     }
 }
 
