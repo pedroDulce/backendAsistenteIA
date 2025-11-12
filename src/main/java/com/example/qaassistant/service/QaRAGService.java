@@ -322,56 +322,35 @@ public class QaRAGService {
         return "SELECT nombre, estado, equipo_responsable FROM Aplicacion ORDER BY estado, nombre";
     }
 
-    // Método específico para formatear actividades
     private String formatActivitiesResponse(List<Map<String, Object>> results) {
         StringBuilder sb = new StringBuilder();
-        sb.append("📋 **Todas las Actividades QA registradas:**\n\n");
 
-        // Agrupar por aplicación para mejor organización
-        Map<String, List<Map<String, Object>>> groupedByApp = new LinkedHashMap<>();
-
-        for (Map<String, Object> row : results) {
-            String appNombre = String.valueOf(row.get("aplicacion_nombre".toUpperCase()));
-            groupedByApp.computeIfAbsent(appNombre, k -> new ArrayList<>()).add(row);
-        }
-
-        for (Map.Entry<String, List<Map<String, Object>>> appEntry : groupedByApp.entrySet()) {
-            sb.append("🏢 **Aplicación: ").append(appEntry.getKey()).append("**\n\n");
-
-            // Agrupar por itinerario dentro de cada aplicación
-            Map<String, List<Map<String, Object>>> groupedByItinerario = new LinkedHashMap<>();
-            for (Map<String, Object> actividad : appEntry.getValue()) {
-                String itinerario = String.valueOf(actividad.get("aplicacion_nombre".toUpperCase()));
-                groupedByItinerario.computeIfAbsent(itinerario, k -> new ArrayList<>()).add(actividad);
-            }
-
-            for (Map.Entry<String, List<Map<String, Object>>> itinerarioEntry : groupedByItinerario.entrySet()) {
-                sb.append("   📁 **Itinerario: ").append(itinerarioEntry.getKey()).append("**\n");
-
-                for (Map<String, Object> actividad : itinerarioEntry.getValue()) {
-                    String nombre = String.valueOf(actividad.get("actividad_nombre".toUpperCase()));
-                    String tipo = String.valueOf(actividad.get("actividad_tipo".toUpperCase()));
-                    Object porcentaje = actividad.get("porcentaje_completado".toUpperCase());
-                    String estado = String.valueOf(actividad.get("actividad_estado".toUpperCase()));
-
-                    // Manejar valores null
-                    String tipoDisplay = (tipo != null && !"null".equals(tipo)) ? tipo : "No especificado";
-                    String porcentajeDisplay = (porcentaje != null) ? porcentaje + "%" : "0%";
-                    String estadoDisplay = (estado != null && !"null".equals(estado)) ? estado : "PENDIENTE";
-
-                    sb.append("      • **").append(nombre).append("**\n");
-                    sb.append("        🏷️  Tipo: ").append(tipoDisplay).append(" | ");
-                    sb.append("📈 Completado: ").append(porcentajeDisplay).append(" | ");
-                    sb.append("🎯 Estado: ").append(estadoDisplay).append("\n");
-                }
-                sb.append("\n");
-            }
-        }
+        sb.append("<div>");
+        sb.append("<h2>📋 Actividades QA</h2>");
 
         if (results.isEmpty()) {
-            sb.append("❌ No se encontraron actividades QA en la base de datos.\n");
-            sb.append("   Verifica que la tabla ActividadQA tenga datos en data.sql\n");
+            sb.append("<p>No se encontraron actividades.</p>");
+        } else {
+            sb.append("<table border='1'>");
+            sb.append("<thead><tr>");
+            // Supongamos que conocemos las columnas, o las obtenemos del primer registro
+            if (!results.isEmpty()) {
+                for (String key : results.get(0).keySet()) {
+                    sb.append("<th>").append(key).append("</th>");
+                }
+            }
+            sb.append("</tr></thead>");
+            sb.append("<tbody>");
+            for (Map<String, Object> row : results) {
+                sb.append("<tr>");
+                for (Object value : row.values()) {
+                    sb.append("<td>").append(value != null ? value : "").append("</td>");
+                }
+                sb.append("</tr>");
+            }
+            sb.append("</tbody></table>");
         }
+        sb.append("</div>");
 
         return sb.toString();
     }
