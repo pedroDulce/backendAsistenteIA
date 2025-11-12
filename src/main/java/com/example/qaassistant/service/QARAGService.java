@@ -17,25 +17,30 @@ import java.util.stream.Collectors;
 @Transactional
 public class QARAGService {
 
+    private VectorDBCleaner vectorDBCleaner;
     private final ConocimientoRAGRepository conocimientoRepo;
     private final EmbeddingService embeddingService;
     private final DataInitializer dataInitializer;
 
     public QARAGService(ConocimientoRAGRepository conocimientoRepo,
                         EmbeddingService embeddingService,
-                        DataInitializer dataInitializer) {
+                        DataInitializer dataInitializer,
+                        VectorDBCleaner vectorDBCleaner) {
         this.conocimientoRepo = conocimientoRepo;
         this.embeddingService = embeddingService;
         this.dataInitializer = dataInitializer;
+        this.vectorDBCleaner = vectorDBCleaner;
     }
 
     @PostConstruct
     public void initialize() {
         // Inicializar con conocimiento base
         dataInitializer.initializeKnowledgeBase();
+        vectorDBCleaner.deduplicateVectorDB();
     }
 
     public ChatResponse processQuestion(String question) {
+
         // 1. Generar embedding de la pregunta
         List<Float> questionEmbedding = embeddingService.generateEmbedding(question);
 
