@@ -1,7 +1,7 @@
 package com.example.qaassistant.controller;
 
-import com.example.qaassistant.model.query.QueryResult;
-import com.example.qaassistant.service.OllamaQueryService;
+import com.example.qaassistant.model.ollama.QueryResult;
+import com.example.qaassistant.service.ollama.OllamaQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

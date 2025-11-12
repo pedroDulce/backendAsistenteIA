@@ -1,4 +1,4 @@
-package com.example.qaassistant.service;
+package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.OllamaRequest;
 import com.example.qaassistant.model.ollama.OllamaResponse;

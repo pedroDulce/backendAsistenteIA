@@ -1,4 +1,4 @@
-package com.example.qaassistant.model.query;
+package com.example.qaassistant.model.ollama;
 
 import java.util.List;
 import java.util.Map;
