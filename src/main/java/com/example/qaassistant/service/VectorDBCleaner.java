@@ -1,8 +1,7 @@
 package com.example.qaassistant.service;
 
-import com.example.qaassistant.service.QARAGService;
+import com.example.qaassistant.model.KnowledgeDocument;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,13 +22,13 @@ public class VectorDBCleaner {
                     "ranking cobertura"
             );
 
-            Set<Document> allDocs = new HashSet<>();
+            Set<KnowledgeDocument> allDocs = new HashSet<>();
 
             for (String query : testQueries) {
                 try {
                     // Asumiendo que tu servicio puede devolver los documentos encontrados
                     // Necesitarás adaptar esto según tu implementación
-                    List<Document> docs = searchDocuments(query);
+                    List<KnowledgeDocument> docs = searchDocuments(query);
                     allDocs.addAll(docs);
                     System.out.println("🔍 Query '" + query + "' encontró: " + docs.size() + " documentos");
                 } catch (Exception e) {
@@ -40,18 +39,18 @@ public class VectorDBCleaner {
             System.out.println("📊 Total documentos recuperados: " + allDocs.size());
 
             // Identificar duplicados por contenido
-            Map<String, List<Document>> contentGroups = allDocs.stream()
+            Map<String, List<KnowledgeDocument>> contentGroups = allDocs.stream()
                     .collect(Collectors.groupingBy(doc -> normalizeContent(doc.getContent())));
 
             // Encontrar duplicados
-            Map<String, List<Document>> duplicates = contentGroups.entrySet().stream()
+            Map<String, List<KnowledgeDocument>> duplicates = contentGroups.entrySet().stream()
                     .filter(entry -> entry.getValue().size() > 1)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             System.out.println("🔍 Grupos de duplicados encontrados: " + duplicates.size());
 
             // Mantener solo documentos únicos
-            List<Document> uniqueDocs = contentGroups.values().stream()
+            List<KnowledgeDocument> uniqueDocs = contentGroups.values().stream()
                     .map(group -> group.get(0)) // Primer documento de cada grupo
                     .collect(Collectors.toList());
 
@@ -77,54 +76,6 @@ public class VectorDBCleaner {
         }
     }
 
-    // Clase Document interna si no tienes una
-    public static class Document {
-        private String id;
-        private String content;
-        private Map<String, Object> metadata;
-
-        public Document(String content) {
-            this.content = content;
-            this.id = UUID.randomUUID().toString();
-            this.metadata = new HashMap<>();
-        }
-
-        public Document(String id, String content, Map<String, Object> metadata) {
-            this.id = id;
-            this.content = content;
-            this.metadata = metadata != null ? metadata : new HashMap<>();
-        }
-
-        // Getters and setters
-        public String getId() { return id; }
-        public void setId(String id) { this.id = id; }
-
-        public String getContent() { return content; }
-        public void setContent(String content) { this.content = content; }
-
-        public Map<String, Object> getMetadata() { return metadata; }
-        public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Document document = (Document) o;
-            return Objects.equals(id, document.id) &&
-                    Objects.equals(content, document.content);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id, content);
-        }
-
-        @Override
-        public String toString() {
-            return "Document{id='" + id + "', content='" +
-                    (content != null ? content.substring(0, Math.min(50, content.length())) : "null") + "...'}";
-        }
-    }
 
     private String normalizeContent(String content) {
         if (content == null) return "null";
@@ -135,14 +86,14 @@ public class VectorDBCleaner {
     }
 
     // Método que necesitas adaptar según tu implementación
-    private List<Document> searchDocuments(String query) {
+    private List<KnowledgeDocument> searchDocuments(String query) {
         // TODO: Adaptar esto a tu implementación real
         // Esto es un ejemplo - necesitas usar tu vector store real
 
         System.out.println("🔍 Buscando: " + query);
 
         // Simulación - reemplaza con tu lógica real
-        List<Document> results = new ArrayList<>();
+        List<KnowledgeDocument> results = new ArrayList<>();
 
         // Ejemplo: si tu servicio tiene un método para buscar
         // return qaRAGService.searchDocuments(query);
@@ -151,7 +102,7 @@ public class VectorDBCleaner {
     }
 
     // Método para reindexar - adaptar según tu implementación
-    private void reindexVectorStore(List<Document> uniqueDocs) {
+    private void reindexVectorStore(List<KnowledgeDocument> uniqueDocs) {
         // TODO: Implementar la lógica de reindexación según tu vector store
         System.out.println("🔄 Reindexando con " + uniqueDocs.size() + " documentos únicos...");
 
@@ -163,7 +114,7 @@ public class VectorDBCleaner {
         // vectorStore.addDocuments(uniqueDocs);
     }
 
-    private void printDuplicateReport(Map<String, List<Document>> duplicates) {
+    private void printDuplicateReport(Map<String, List<KnowledgeDocument>> duplicates) {
         if (duplicates.isEmpty()) {
             System.out.println("✅ No se encontraron duplicados");
             return;
@@ -183,6 +134,5 @@ public class VectorDBCleaner {
             });
         });
     }
-
 
 }

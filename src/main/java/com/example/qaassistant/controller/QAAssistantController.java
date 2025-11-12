@@ -3,7 +3,7 @@ package com.example.qaassistant.controller;
 import com.example.qaassistant.model.Aplicacion;
 import com.example.qaassistant.model.EstadoAplicacion;
 import com.example.qaassistant.repository.AplicacionRepository;
-import com.example.qaassistant.service.QARAGService;
+import com.example.qaassistant.service.QaRAGService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class QAAssistantController {
 
-    private final QARAGService qaRAGService;
+    private final QaRAGService qaRAGService;
     private final AplicacionRepository aplicacionRepository;
 
-    public QAAssistantController(QARAGService qaRAGService, AplicacionRepository aplicacionRepository) {
+    public QAAssistantController(QaRAGService qaRAGService, AplicacionRepository aplicacionRepository) {
         this.qaRAGService = qaRAGService;
         this.aplicacionRepository = aplicacionRepository;
     }
