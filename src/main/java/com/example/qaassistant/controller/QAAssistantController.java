@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/qa-assistant")
+@RequestMapping("/api-old/qa-assistant")
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class QAAssistantController {
 

@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api2/qa")
-public class SmartQAController {
+@RequestMapping("/api/qa")
+public class OllamaQAController {
 
     @Autowired
     private OllamaQueryService ollamaQueryService;
