@@ -1,5 +1,8 @@
 package com.example.qaassistant.controller;
 
-// DTOs
-public record ChatRequest(String question) {
+import lombok.Data;
+
+@Data
+public class ChatRequest {
+    private String question;
 }
