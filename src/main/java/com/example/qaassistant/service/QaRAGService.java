@@ -40,11 +40,15 @@ public class QaRAGService {
         String lowerQuestion = question.toLowerCase();
         return lowerQuestion.contains("datos de") ||
                 lowerQuestion.contains("base de datos") ||
+                lowerQuestion.contains("sistema") ||
                 lowerQuestion.contains("calcula") ||
                 lowerQuestion.contains("ranking") ||
                 lowerQuestion.contains("cuántos") ||
+                lowerQuestion.contains("cuantos") ||
                 lowerQuestion.contains("qué actividades") ||
+                lowerQuestion.contains("que actividades") ||
                 lowerQuestion.contains("estado de") ||
+                lowerQuestion.contains("aplicación") ||
                 lowerQuestion.contains("aplicaciones") &&
                         (lowerQuestion.contains("todas") ||
                                 lowerQuestion.contains("lista") ||
@@ -89,20 +93,24 @@ public class QaRAGService {
         String lowerQuestion = question.toLowerCase();
 
         // Consultas específicas basadas en palabras clave
-        if (lowerQuestion.contains("actividades") && lowerQuestion.contains("itinerario")) {
+        if (lowerQuestion.contains("actividad") && !lowerQuestion.contains("itinerario")) {
+            return extractActivitiesSQL();
+        } else if (lowerQuestion.contains("actividad") && lowerQuestion.contains("tipos")) {
+            return extractTiposDeActivitiesSQL();
+        } else if (lowerQuestion.contains("actividades") && lowerQuestion.contains("itinerario")) {
             return extractItinerarioActivitiesSQL(question);
         } else if (lowerQuestion.contains("ranking") || lowerQuestion.contains("cobertura")) {
             return generateRankingSQL();
-        } else if (lowerQuestion.contains("aplicaciones") &&
+        } else if ((lowerQuestion.contains("aplicaciones") || lowerQuestion.contains("aplicación")) &&
                 (lowerQuestion.contains("todas") || lowerQuestion.contains("lista"))) {
             return "SELECT id, nombre, descripcion, equipo_responsable, estado FROM Aplicacion ORDER BY nombre";
         } else if (lowerQuestion.contains("cuántas aplicaciones")) {
             return "SELECT COUNT(*) as total FROM Aplicacion";
         } else if (lowerQuestion.contains("itinerarios activos")) {
-            return "SELECT id, nombre, elemento_promocionable_id, estado FROM ItinerarioQA WHERE estado = 'ACTIVO'";
+            return "SELECT id, nombre, elemento_promocionable_id, estado FROM Itinerario_QA WHERE estado = 'ACTIVO'";
         } else if (lowerQuestion.contains("elementos promocionables")) {
             return "SELECT ep.id, ep.nombre, ep.tipo, app.nombre as aplicacion " +
-                    "FROM ElementoPromocionable ep " +
+                    "FROM Elemento_Promocionable ep " +
                     "JOIN Aplicacion app ON ep.aplicacion_id = app.id";
         }
 
@@ -115,10 +123,27 @@ public class QaRAGService {
         String itinerarioName = extractItinerarioName(question);
 
         return "SELECT a.nombre, a.tipo, a.porcentaje_completado, a.estado, i.nombre as itinerario " +
-                "FROM ActividadQA a " +
-                "JOIN ItinerarioQA i ON a.itinerario_id = i.id " +
+                "FROM Actividad_QA a " +
+                "JOIN Itinerario_QA i ON a.itinerario_id = i.id " +
                 "WHERE LOWER(i.nombre) LIKE LOWER('%" + itinerarioName + "%') " +
                 "ORDER BY a.porcentaje_completado DESC";
+    }
+
+    private String extractActivitiesSQL() {
+        return
+        "SELECT app.nombre as aplicacion_nombre, a.nombre as actividad_nombre, a.descripcion as actividad_descripcion, " +
+                "a.tipo as actividad_tipo, a.porcentaje_completado, a.estado as actividad_estado, a.fecha_estimada, " +
+                "i.nombre as itinerario " +
+                "FROM Actividad_QA a " +
+                "JOIN Elemento_Promocionable ep ON app.id = ep.aplicacion_id " +
+                "JOIN Aplicacion app ON app.id = ep.aplicacion_id " +
+                "JOIN Itinerario_QA i ON a.itinerario_id = i.id " +
+                "WHERE ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
+                "ORDER BY a.porcentaje_completado DESC";
+    }
+
+    private String extractTiposDeActivitiesSQL() {
+        return "SELECT DISTINCT(tipo) AS actividad_tipo FROM Actividad_QA";
     }
 
     private String generateRankingSQL() {
@@ -128,20 +153,12 @@ public class QaRAGService {
                 "    COUNT(a.id) AS total_actividades, " +
                 "    COUNT(CASE WHEN a.estado = 'COMPLETADO' THEN 1 END) as actividades_completadas " +
                 "FROM Aplicacion app " +
-                "LEFT JOIN ElementoPromocionable ep ON app.id = ep.aplicacion_id " +
-                "LEFT JOIN ItinerarioQA i ON ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
-                "LEFT JOIN ActividadQA a ON i.id = a.itinerario_id " +
+                "LEFT JOIN Elemento_Promocionable ep ON app.id = ep.aplicacion_id " +
+                "LEFT JOIN Itinerario_QA i ON ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
+                "LEFT JOIN Actividad_QA a ON i.id = a.itinerario_id " +
                 "GROUP BY app.id, app.nombre " +
                 "HAVING COUNT(a.id) > 0 " +
                 "ORDER BY cobertura_promedio DESC NULLS LAST";
-    }
-
-    private String extractItinerarioName(String question) {
-        if (question.toLowerCase().contains("login")) return "Login";
-        if (question.toLowerCase().contains("dashboard")) return "Dashboard";
-        if (question.toLowerCase().contains("refund")) return "Refund";
-        if (question.toLowerCase().contains("biometric")) return "Biometric";
-        return ""; // Devolver vacío para buscar todos
     }
 
     private String formatRealDataResponse(String question, List<Map<String, Object>> results, List<KnowledgeDocument> context) {
@@ -180,10 +197,10 @@ public class QaRAGService {
 
         int position = 1;
         for (Map<String, Object> row : results) {
-            String app = String.valueOf(row.get("aplicacion"));
-            Object coverageObj = row.get("cobertura_promedio");
-            Long total = (Long) row.get("total_actividades");
-            Long completadas = (Long) row.get("actividades_completadas");
+            String app = String.valueOf(row.get("aplicacion".toUpperCase()));
+            Object coverageObj = row.get("cobertura_promedio".toUpperCase());
+            Long total = (Long) row.get("total_actividades".toUpperCase());
+            Long completadas = (Long) row.get("actividades_completadas".toUpperCase());
 
             String coverageStr = (coverageObj != null) ?
                     String.format("%.1f", ((Number)coverageObj).doubleValue()) : "0.0";
@@ -197,44 +214,15 @@ public class QaRAGService {
         return sb.toString();
     }
 
-    private String formatActivitiesResponse(List<Map<String, Object>> results) {
-        StringBuilder sb = new StringBuilder();
-
-        // Agrupar por itinerario
-        Map<String, List<Map<String, Object>>> grouped = new HashMap<>();
-        for (Map<String, Object> row : results) {
-            String itinerario = String.valueOf(row.get("itinerario"));
-            grouped.computeIfAbsent(itinerario, k -> new ArrayList<>()).add(row);
-        }
-
-        for (Map.Entry<String, List<Map<String, Object>>> entry : grouped.entrySet()) {
-            sb.append("📋 **Itinerario: ").append(entry.getKey()).append("**\n\n");
-
-            for (Map<String, Object> row : entry.getValue()) {
-                String nombre = String.valueOf(row.get("nombre"));
-                String tipo = String.valueOf(row.get("tipo"));
-                Object porcentaje = row.get("porcentaje_completado");
-                String estado = String.valueOf(row.get("estado"));
-
-                sb.append("• **").append(nombre).append("**\n");
-                sb.append("  🏷️  Tipo: ").append(tipo).append(" | ");
-                sb.append("📈 Completado: ").append(porcentaje).append("% | ");
-                sb.append("🎯 Estado: ").append(estado).append("\n\n");
-            }
-        }
-
-        return sb.toString();
-    }
-
     private String formatApplicationsResponse(List<Map<String, Object>> results) {
         StringBuilder sb = new StringBuilder();
         sb.append("📱 **Aplicaciones en el sistema:**\n\n");
 
         for (Map<String, Object> row : results) {
-            String nombre = String.valueOf(row.get("nombre"));
-            String descripcion = String.valueOf(row.get("descripcion"));
-            String equipo = String.valueOf(row.get("equipo_responsable"));
-            String estado = String.valueOf(row.get("estado"));
+            String nombre = String.valueOf(row.get("nombre".toUpperCase()));
+            String descripcion = String.valueOf(row.get("descripcion".toUpperCase()));
+            String equipo = String.valueOf(row.get("equipo_responsable".toUpperCase()));
+            String estado = String.valueOf(row.get("estado".toUpperCase()));
 
             sb.append("• **").append(nombre).append("**\n");
             sb.append("  📝 ").append(descripcion).append("\n");
@@ -248,7 +236,7 @@ public class QaRAGService {
     private String formatCountResponse(List<Map<String, Object>> results) {
         if (!results.isEmpty()) {
             Map<String, Object> firstRow = results.get(0);
-            Object count = firstRow.get("total");
+            Object count = firstRow.get("total".toUpperCase());
             return "📊 **Total encontrado:** " + count;
         }
         return "📊 **Total:** 0";
@@ -284,6 +272,121 @@ public class QaRAGService {
                 "Mostrar actividades recientes",
                 "Consultar itinerarios activos"
         );
+    }
+
+    private String generateSQLFromQuestion(String question) {
+        String lowerQuestion = question.toLowerCase();
+
+        // CONSULTA ESPECÍFICA PARA ACTIVIDADES QA
+        if (lowerQuestion.contains("actividad")) {
+            return """
+            SELECT 
+                a.nombre as actividad_nombre,
+                a.tipo as actividad_tipo, 
+                a.porcentaje_completado,
+                a.estado as actividad_estado,
+                i.nombre as itinerario_nombre,
+                ep.nombre as elemento_nombre,
+                app.nombre as aplicacion_nombre
+            FROM Actividad_QA a
+            JOIN Itinerario_QA i ON a.itinerario_id = i.id
+            JOIN Elemento_Promocionable ep ON i.elemento_promocionable_id = ep.id
+            JOIN Aplicacion app ON ep.aplicacion_id = app.id
+            ORDER BY a.porcentaje_completado DESC
+            """;
+        }
+        // CONSULTA ESPECÍFICA PARA ACTIVIDADES DE ITINERARIO
+        else if (lowerQuestion.contains("actividades") && lowerQuestion.contains("itinerario")) {
+            return extractItinerarioActivitiesSQL(question);
+        }
+        else if (lowerQuestion.contains("ranking") || lowerQuestion.contains("cobertura")) {
+            return generateRankingSQL();
+        }
+        else if (lowerQuestion.contains("aplicaciones") &&
+                (lowerQuestion.contains("todas") || lowerQuestion.contains("lista"))) {
+            return "SELECT id, nombre, descripcion, equipo_responsable, estado FROM Aplicacion ORDER BY nombre";
+        }
+        else if (lowerQuestion.contains("cuántas aplicaciones")) {
+            return "SELECT COUNT(*) as total FROM Aplicacion";
+        }
+        else if (lowerQuestion.contains("itinerarios activos")) {
+            return "SELECT id, nombre, elemento_promocionable_id, estado FROM Itinerario_QA WHERE estado = 'ACTIVO'";
+        }
+        else if (lowerQuestion.contains("elementos promocionables")) {
+            return "SELECT ep.id, ep.nombre, ep.tipo, app.nombre as aplicacion " +
+                    "FROM Elemento_Promocionable ep " +
+                    "JOIN Aplicacion app ON ep.aplicacion_id = app.id";
+        }
+
+        // Consulta por defecto - información general de aplicaciones
+        return "SELECT nombre, estado, equipo_responsable FROM Aplicacion ORDER BY estado, nombre";
+    }
+
+    // Método específico para formatear actividades
+    private String formatActivitiesResponse(List<Map<String, Object>> results) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("📋 **Todas las Actividades QA registradas:**\n\n");
+
+        // Agrupar por aplicación para mejor organización
+        Map<String, List<Map<String, Object>>> groupedByApp = new LinkedHashMap<>();
+
+        for (Map<String, Object> row : results) {
+            String appNombre = String.valueOf(row.get("aplicacion_nombre".toUpperCase()));
+            groupedByApp.computeIfAbsent(appNombre, k -> new ArrayList<>()).add(row);
+        }
+
+        for (Map.Entry<String, List<Map<String, Object>>> appEntry : groupedByApp.entrySet()) {
+            sb.append("🏢 **ActividadQA: ").append(appEntry.getKey()).append("**\n\n");
+
+            // Agrupar por itinerario dentro de cada aplicación
+            Map<String, List<Map<String, Object>>> groupedByItinerario = new LinkedHashMap<>();
+            for (Map<String, Object> actividad : appEntry.getValue()) {
+                String itinerario = String.valueOf(actividad.get("aplicacion_nombre".toUpperCase()));
+                groupedByItinerario.computeIfAbsent(itinerario, k -> new ArrayList<>()).add(actividad);
+            }
+
+            for (Map.Entry<String, List<Map<String, Object>>> itinerarioEntry : groupedByItinerario.entrySet()) {
+                sb.append("   📁 **Itinerario: ").append(itinerarioEntry.getKey()).append("**\n");
+
+                for (Map<String, Object> actividad : itinerarioEntry.getValue()) {
+                    String nombre = String.valueOf(actividad.get("actividad_nombre".toUpperCase()));
+                    String tipo = String.valueOf(actividad.get("actividad_tipo".toUpperCase()));
+                    Object porcentaje = actividad.get("porcentaje_completado".toUpperCase());
+                    String estado = String.valueOf(actividad.get("actividad_estado".toUpperCase()));
+
+                    // Manejar valores null
+                    String tipoDisplay = (tipo != null && !"null".equals(tipo)) ? tipo : "No especificado";
+                    String porcentajeDisplay = (porcentaje != null) ? porcentaje + "%" : "0%";
+                    String estadoDisplay = (estado != null && !"null".equals(estado)) ? estado : "PENDIENTE";
+
+                    sb.append("      • **").append(nombre).append("**\n");
+                    sb.append("        🏷️  Tipo: ").append(tipoDisplay).append(" | ");
+                    sb.append("📈 Completado: ").append(porcentajeDisplay).append(" | ");
+                    sb.append("🎯 Estado: ").append(estadoDisplay).append("\n");
+                }
+                sb.append("\n");
+            }
+        }
+
+        if (results.isEmpty()) {
+            sb.append("❌ No se encontraron actividades QA en la base de datos.\n");
+            sb.append("   Verifica que la tabla ActividadQA tenga datos en data.sql\n");
+        }
+
+        return sb.toString();
+    }
+
+    // Método mejorado para extraer nombre de itinerario
+    private String extractItinerarioName(String question) {
+        if (question.toLowerCase().contains("login") || question.toLowerCase().contains("biometric"))
+            return "LoginBiometrico";
+        if (question.toLowerCase().contains("dashboard") || question.toLowerCase().contains("analiticas"))
+            return "Dashboard";
+        if (question.toLowerCase().contains("refund") || question.toLowerCase().contains("reembolso"))
+            return "Refund";
+        if (question.toLowerCase().contains("reporte") || question.toLowerCase().contains("analitico"))
+            return "Reportes";
+        return ""; // Devolver vacío para buscar todos
     }
 }
 

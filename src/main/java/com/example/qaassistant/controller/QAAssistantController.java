@@ -46,9 +46,12 @@ public class QAAssistantController {
     public ResponseEntity<List<RankingDTO>> getRankingTest() {
         // Datos de prueba temporales
         List<RankingDTO> testRanking = List.of(
-                new RankingDTO(new Aplicacion(1L, "App Web Test", "Aplicación de prueba", "Equipo QA", EstadoAplicacion.ACTIVA), 85.5f),
-                new RankingDTO(new Aplicacion(2L, "API Test", "API de prueba", "Equipo Backend", EstadoAplicacion.ACTIVA), 72.3f),
-                new RankingDTO(new Aplicacion(3L, "Mobile Test", "App móvil de prueba", "Equipo Mobile", EstadoAplicacion.ACTIVA), 63.8f)
+                new RankingDTO(new Aplicacion(1L, "App Web Test", "Aplicación de prueba",
+                        "Equipo QA", EstadoAplicacion.ACTIVA), 85.5f),
+                new RankingDTO(new Aplicacion(2L, "API Test", "API de prueba",
+                        "Equipo Backend", EstadoAplicacion.ACTIVA), 72.3f),
+                new RankingDTO(new Aplicacion(3L, "Mobile Test", "App móvil de prueba",
+                        "Equipo Mobile", EstadoAplicacion.ACTIVA), 63.8f)
         );
 
         return ResponseEntity.ok(testRanking);
