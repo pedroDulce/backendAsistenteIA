@@ -98,8 +98,9 @@ public class OllamaService {
                 clean.toUpperCase().contains("UPDATE") ||
                 clean.toUpperCase().contains("DELETE")) {
 
-            if (!clean.endsWith(";")) {
-                clean += ";";
+            // ELIMINAR el punto y coma final para Spring JDBC
+            if (clean.endsWith(";")) {
+                clean = clean.substring(0, clean.length() - 1);
             }
             return clean;
         } else {

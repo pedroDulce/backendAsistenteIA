@@ -2,9 +2,13 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.QueryResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +39,37 @@ public class OllamaQueryService {
                 return new QueryResult(userQuestion, null, null,
                         "No pude generar una consulta para tu pregunta.", cleanSQL, false);
             }
+            // 4. Ejecutar consulta con RowMapper personalizado
+            List<Map<String, Object>> results = jdbcTemplate.query(cleanSQL, new ColumnMapRowMapper() {
+                @Override
+                protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
+                    Object value = super.getColumnValue(rs, index);
+                    // Convertir cualquier enum a String
+                    if (value instanceof Enum) {
+                        return value.toString();
+                    }
+                    return value;
+                }
+            });
 
-            // 4. Ejecutar consulta
-            List<Map<String, Object>> results = jdbcTemplate.queryForList(cleanSQL);
+            // En tu método processNaturalLanguageQuery, justo antes de llamar a formatResultsForDisplay:
+            System.out.println("=== DEBUG RESULTS BEFORE FORMATTING ===");
+            System.out.println("Number of results: " + results.size());
+            if (!results.isEmpty()) {
+                System.out.println("First result keys: " + results.get(0).keySet());
+                System.out.println("First result values: " + results.get(0));
 
-            // 5. Formatear respuesta - CORREGIDO: usar formatResultsForDisplay
+                // Verificar tipos de datos
+                Map<String, Object> firstRow = results.get(0);
+                for (Map.Entry<String, Object> entry : firstRow.entrySet()) {
+                    System.out.println("Column '" + entry.getKey() + "' -> Type: " +
+                            (entry.getValue() != null ? entry.getValue().getClass().getSimpleName() : "NULL") +
+                            ", Value: " + entry.getValue());
+                }
+            }
+            System.out.println("======================================");
+
+            // 5. Formatear respuesta
             String formattedResults = formatResultsForDisplay(results);
             String explanation = buildExplanation(userQuestion, cleanSQL, results.size());
 
@@ -58,126 +88,85 @@ public class OllamaQueryService {
      */
     private String formatResultsForDisplay(List<Map<String, Object>> results) {
         if (results == null || results.isEmpty()) {
-            return """
-                <div style='
-                    padding: 20px; 
-                    text-align: center; 
-                    background: #f8f9fa; 
-                    border-radius: 8px; 
-                    margin: 10px 0;
-                    border: 1px solid #e9ecef;
-                '>
-                    <h3 style='color: #6c757d; margin: 0;'>🔍 No se encontraron resultados</h3>
-                    <p style='color: #868e96; margin: 10px 0 0 0;'>
-                        La consulta no devolvió ningún registro.
-                    </p>
-                </div>
-                """;
+            return "No se encontraron resultados para la consulta.";
         }
 
-        StringBuilder html = new StringBuilder();
+        try {
+            StringBuilder formatted = new StringBuilder();
+            formatted.append("Se encontraron ").append(results.size()).append(" resultados:\n\n");
 
-        // CSS inline para evitar problemas con Angular
-        html.append("""
-            <style>
-                .results-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 15px 0;
-                    font-family: Arial, sans-serif;
-                    font-size: 14px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                }
-                .results-table th {
-                    background-color: #34495e;
-                    color: white;
-                    padding: 12px 8px;
-                    text-align: left;
-                    font-weight: bold;
-                    border: 1px solid #2c3e50;
-                }
-                .results-table td {
-                    padding: 10px 8px;
-                    border: 1px solid #ddd;
-                    vertical-align: top;
-                }
-                .results-table tr:nth-child(even) {
-                    background-color: #f8f9fa;
-                }
-                .results-table tr:hover {
-                    background-color: #e9ecef;
-                }
-                .table-container {
-                    overflow-x: auto;
-                    margin: 20px 0;
-                    border-radius: 8px;
-                    border: 1px solid #dee2e6;
-                }
-                .results-count {
-                    background: #e8f5e8;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    margin: 10px 0;
-                    border-left: 4px solid #4CAF50;
-                }
-            </style>
-            """);
+            // Obtener nombres de columnas del primer registro
+            Map<String, Object> firstRow = results.get(0);
+            List<String> columns = new ArrayList<>(firstRow.keySet());
 
-        html.append("<div class='table-container'>");
-        html.append("<div class='results-count'>");
-        html.append("📊 <strong>").append(results.size()).append(" registro(s) encontrado(s)</strong>");
-        html.append("</div>");
-        html.append("<table class='results-table'>");
+            // Crear tabla
+            formatted.append(createTableHeader(columns));
 
-        // Headers
-        html.append("<thead><tr>");
-        for (String key : results.get(0).keySet()) {
-            html.append("<th>").append(escapeHtml(key)).append("</th>");
-        }
-        html.append("</tr></thead>");
-
-        // Data
-        html.append("<tbody>");
-        for (Map<String, Object> row : results) {
-            html.append("<tr>");
-            for (Object value : row.values()) {
-                String displayValue = (value != null) ? escapeHtml(value.toString()) :
-                        "<span style='color: #6c757d; font-style: italic;'>NULL</span>";
-
-                // Resaltar estados y porcentajes
-                if (value != null) {
-                    String stringValue = value.toString();
-                    if (stringValue.equals("COMPLETADA")) {
-                        displayValue = "<span style='color: #28a745; font-weight: bold;'>✅ " + stringValue + "</span>";
-                    } else if (stringValue.equals("EN_PROGRESO")) {
-                        displayValue = "<span style='color: #ffc107; font-weight: bold;'>🔄 " + stringValue + "</span>";
-                    } else if (stringValue.equals("PENDIENTE")) {
-                        displayValue = "<span style='color: #dc3545; font-weight: bold;'>⏳ " + stringValue + "</span>";
-                    } else if (stringValue.matches("\\d+") && row.keySet().contains("PORCENTAJE_COMPLETADO")) {
-                        // Si es un número y es porcentaje, mostrar barra de progreso
-                        int porcentaje = Integer.parseInt(stringValue);
-                        String color = porcentaje >= 80 ? "#28a745" :
-                                porcentaje >= 50 ? "#ffc107" : "#dc3545";
-                        displayValue = """
-                            <div style='display: flex; align-items: center; gap: 8px;'>
-                                <div style='flex-grow: 1; height: 8px; background: #e9ecef; border-radius: 4px;'>
-                                    <div style='height: 100%; background: %s; border-radius: 4px; width: %d%%;'></div>
-                                </div>
-                                <span style='font-weight: bold; color: %s;'>%d%%</span>
-                            </div>
-                            """.formatted(color, porcentaje, color, porcentaje);
-                    }
-                }
-
-                html.append("<td>").append(displayValue).append("</td>");
+            for (int i = 0; i < results.size(); i++) {
+                Map<String, Object> row = results.get(i);
+                formatted.append(createTableRow(columns, row, i + 1));
             }
-            html.append("</tr>");
-        }
-        html.append("</tbody></table></div>");
 
-        return html.toString();
+            return formatted.toString();
+
+        } catch (Exception e) {
+            System.out.println("=== DEBUG ERROR en formatResultsForDisplay ===");
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+
+            // Fallback: mostrar información básica
+            return "Resultados: " + results.size() + " registros encontrados. " +
+                    "(Error formateando detalles: " + e.getMessage() + ")";
+        }
     }
 
+    private String createTableHeader(List<String> columns) {
+        StringBuilder header = new StringBuilder();
+        header.append("| # ");
+        for (String column : columns) {
+            header.append("| ").append(column).append(" ");
+        }
+        header.append("|\n");
+
+        // Línea separadora
+        header.append("|" + "---|".repeat(columns.size() + 1)).append("\n");
+
+        return header.toString();
+    }
+
+    private String createTableRow(List<String> columns, Map<String, Object> row, int rowNumber) {
+        StringBuilder rowBuilder = new StringBuilder();
+        rowBuilder.append("| ").append(rowNumber).append(" ");
+
+        for (String column : columns) {
+            Object value = row.get(column);
+            String displayValue = formatValue(value);
+            rowBuilder.append("| ").append(displayValue).append(" ");
+        }
+        rowBuilder.append("|\n");
+
+        return rowBuilder.toString();
+    }
+
+    private String formatValue(Object value) {
+        if (value == null) {
+            return "NULL";
+        }
+
+        try {
+            String stringValue = value.toString();
+
+            // Limitar longitud para evitar tablas demasiado anchas
+            if (stringValue.length() > 50) {
+                return stringValue.substring(0, 47) + "...";
+            }
+
+            return stringValue;
+
+        } catch (Exception e) {
+            return "[Error: " + e.getMessage() + "]";
+        }
+    }
     /**
      * Método auxiliar para escapar HTML (seguridad)
      */
@@ -215,16 +204,16 @@ public class OllamaQueryService {
         return "NO_SQL";
     }
 
-    private String buildExplanation(String question, String sql, int resultCount) {
-        return String.format(
-                "🔍 **He encontrado %d resultado(s) para tu pregunta**\n\n" +
-                        "**Pregunta:** %s\n\n" +
-                        "**Consulta SQL generada:**\n```sql\n%s\n```\n\n" +
-                        "%s",
-                resultCount,
-                question,
-                sql,
-                resultCount > 0 ? "Los resultados se muestran en la tabla siguiente." : "No hay datos que coincidan con tu búsqueda."
-        );
+    private String buildExplanation(String userQuestion, String sql, int resultCount) {
+        try {
+            return String.format(
+                    "Para tu pregunta '%s', generé la consulta SQL: %s. " +
+                            "Se encontraron %d resultados.",
+                    userQuestion, sql, resultCount
+            );
+        } catch (Exception e) {
+            return "Consulta ejecutada exitosamente. Resultados: " + resultCount;
+        }
     }
+
 }
