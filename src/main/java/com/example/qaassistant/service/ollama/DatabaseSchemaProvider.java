@@ -122,29 +122,27 @@ public class DatabaseSchemaProvider {
      */
     public String getOptimizedSchemaForPrompt() {
         return """
-            BASE DE DATOS: H2 en memoria
-            TABLA: ACTIVIDAD_QA
-            
-            COLUMNAS:
-            - APLICACION_NOMBRE (VARCHAR): nombre aplicación [MARE, HARA, MACA]
-            - ACTIVIDAD_NOMBRE (VARCHAR): nombre actividad QA
-            - ACTIVIDAD_DESCRIPCION (VARCHAR): descripción actividad  
-            - ACTIVIDAD_TIPO (VARCHAR): [API, SEGURIDAD, PRUEBA_UNITARIA, PRUEBA_INTEGRACION, RENDIMIENTO, E2E]
-            - PORCENTAJE_COMPLETADO (INTEGER): 0-100
-            - ACTIVIDAD_ESTADO (VARCHAR): [COMPLETADA, EN_PROGRESO, PENDIENTE]
-            - FECHA_ESTIMADA (DATE): fecha estimada
-            - ITINERARIO (VARCHAR): itinerario QA [QA MARE1, QA HARA1, QA HARA2, QA MACA1]
-            
-            EJEMPLOS SQL VÁLIDOS:
-            - Listar todo: SELECT * FROM ACTIVIDAD_QA
-            - Filtrar por aplicación: SELECT * FROM ACTIVIDAD_QA WHERE APLICACION_NOMBRE = 'MARE'
-            - Actividades completadas: SELECT * FROM ACTIVIDAD_QA WHERE ACTIVIDAD_ESTADO = 'COMPLETADA'
-            - Progreso por aplicación: SELECT APLICACION_NOMBRE, AVG(PORCENTAJE_COMPLETADO) FROM ACTIVIDAD_QA GROUP BY APLICACION_NOMBRE
-            - Contar por tipo: SELECT ACTIVIDAD_TIPO, COUNT(*) FROM ACTIVIDAD_QA GROUP BY ACTIVIDAD_TIPO
-            - Ordenar por progreso: SELECT * FROM ACTIVIDAD_QA ORDER BY PORCENTAJE_COMPLETADO DESC
-            """;
-    }
+        BASE DE DATOS: H2 en memoria
+        TABLA: actividad_qa
 
+        COLUMNAS:
+        - id (BIGINT): ID único de la actividad
+        - nombre (VARCHAR): nombre de la actividad QA
+        - descripcion (VARCHAR): descripción de la actividad
+        - tipo (ENUM): tipo de prueba [API, SEGURIDAD, PRUEBA_UNITARIA, PRUEBA_INTEGRACION, RENDIMIENTO, E2E, DOCUMENTACION, REVIEW_CODIGO, PRUEBA_CARGA]
+        - porcentaje_completado (INTEGER): progreso 0-100
+        - estado (ENUM): estado actual [COMPLETADA, EN_PROGRESO, PENDIENTE, BLOQUEADA]
+        - fecha_estimada (DATE): fecha estimada de finalización
+        - itinerario_id (BIGINT): referencia al itinerario
+
+        EJEMPLOS SQL VÁLIDOS:
+        - Listar todo: SELECT * FROM actividad_qa
+        - Filtrar por estado: SELECT * FROM actividad_qa WHERE estado = 'COMPLETADA'
+        - Contar por tipo: SELECT tipo, COUNT(*) FROM actividad_qa GROUP BY tipo
+        - Ordenar por progreso: SELECT * FROM actividad_qa ORDER BY porcentaje_completado DESC
+        - Buscar por nombre: SELECT * FROM actividad_qa WHERE nombre LIKE '%prueba%'
+        """;
+    }
     /**
      * Método principal usado por el servicio
      */

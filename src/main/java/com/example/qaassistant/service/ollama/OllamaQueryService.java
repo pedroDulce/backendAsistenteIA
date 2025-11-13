@@ -196,32 +196,20 @@ public class OllamaQueryService {
         }
 
         String clean = sqlResponse.trim();
-        System.out.println("DEBUG - Raw response from Ollama: " + clean);
+        System.out.println("DEBUG - Raw SQL to clean: " + clean);
 
-        // Si la respuesta ya es un SQL válido (empieza con SELECT), usarlo directamente
-        if (clean.toUpperCase().startsWith("SELECT")) {
-            if (!clean.endsWith(";")) {
-                clean += ";";
+        // Validación básica - si contiene SELECT y FROM, es SQL válido
+        if (clean.toUpperCase().contains("SELECT") && clean.toUpperCase().contains("FROM")) {
+            // ELIMINAR el punto y coma final para Spring JDBC
+            if (clean.endsWith(";")) {
+                clean = clean.substring(0, clean.length() - 1);
             }
+
+            // CONVERTIR tabla a minúsculas para coincidir con la BD real
+            clean = clean.replace("ACTIVIDAD_QA", "actividad_qa");
+            clean = clean.replace("actividad_qa", "actividad_qa"); // Por si acaso
+
             return clean;
-        }
-
-        // Si no, buscar SELECT en cualquier parte
-        if (clean.toUpperCase().contains("SELECT")) {
-            int selectIndex = clean.toUpperCase().indexOf("SELECT");
-            String possibleSQL = clean.substring(selectIndex).trim();
-
-            // Limpiar hasta el final o hasta que encuentre un carácter que no sea parte de SQL
-            // Podemos asumir que el SQL termina al final de la línea o con un punto y coma
-            int endIndex = possibleSQL.indexOf(';');
-            if (endIndex > 0) {
-                possibleSQL = possibleSQL.substring(0, endIndex + 1);
-            }
-
-            if (!possibleSQL.endsWith(";")) {
-                possibleSQL += ";";
-            }
-            return possibleSQL;
         }
 
         return "NO_SQL";
