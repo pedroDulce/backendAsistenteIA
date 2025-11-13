@@ -2,11 +2,9 @@ package com.example.qaassistant.controller;
 
 import com.example.qaassistant.model.Aplicacion;
 import com.example.qaassistant.model.EstadoAplicacion;
-import com.example.qaassistant.model.ollama.QueryResult;
 import com.example.qaassistant.repository.AplicacionRepository;
-import com.example.qaassistant.service.QaRAGService;
-import com.example.qaassistant.service.ollama.OllamaQueryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.qaassistant.service.UnifiedQAService;
+import com.example.qaassistant.service.UnifiedQueryResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,34 +17,25 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/qa-assistant")
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class OllamaQAController {
+    private final AplicacionRepository aplicacionRepository;
+    private final UnifiedQAService unifiedQAService;
 
-    @Autowired
-    private QaRAGService qaRAGService;
-    @Autowired
-    private OllamaQueryService ollamaQueryService;
-    @Autowired
-    private AplicacionRepository aplicacionRepository;
+    public OllamaQAController(UnifiedQAService unifiedQAService, AplicacionRepository aplicacionRepository) {
+        this.unifiedQAService = unifiedQAService;
+        this.aplicacionRepository = aplicacionRepository;
+    }
 
     @PostMapping("/ask")
-    public ResponseEntity<QueryResult> askQuestion(@RequestBody Map<String, String> request) {
-        String question = request.get("question");
-
-        if (question == null || question.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(
-                    new QueryResult("", null, null,
-                            "Pregunta vacía", "Por favor formula una pregunta", false)
-            );
-        }
-        QueryResult result = ollamaQueryService.processNaturalLanguageQuery(question);
+    public ResponseEntity<UnifiedQueryResult> askQuestion(@RequestBody ChatRequest request) {
+        UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
         return ResponseEntity.ok(result);
     }
 
-
-    @PostMapping("/chat")
+    /*@PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        ChatResponse response = qaRAGService.processQuestion(request.getQuestion());
-        return ResponseEntity.ok(response);
-    }
+        UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
+        return ResponseEntity.ok(result);
+    }*/
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
@@ -83,6 +72,16 @@ public class OllamaQAController {
         );
 
         return ResponseEntity.ok(testRanking);
+    }
+
+    public class ErrorResponse {
+        private String error;
+
+        public ErrorResponse(String s) {
+            this.error = s;
+        }
+
+        // constructores, getters y setters
     }
 
 }

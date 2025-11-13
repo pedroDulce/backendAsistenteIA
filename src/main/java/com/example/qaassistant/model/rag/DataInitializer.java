@@ -1,7 +1,6 @@
-package com.example.qaassistant.knowledge;
+package com.example.qaassistant.model.rag;
 
-import com.example.qaassistant.model.KnowledgeDocument;
-import com.example.qaassistant.service.EmbeddingService;
+import com.example.qaassistant.service.rag.EmbeddingService;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

@@ -1,6 +1,6 @@
-package com.example.qaassistant.repository;
+package com.example.qaassistant.repository.rag;
 
-import com.example.qaassistant.model.ConocimientoRAG;
+import com.example.qaassistant.model.rag.ConocimientoRAG;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

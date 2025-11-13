@@ -2,8 +2,6 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.OllamaRequest;
 import com.example.qaassistant.model.ollama.OllamaResponse;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -109,37 +107,6 @@ public class OllamaService {
     }
 
 
-    private String extractSQLFromResponse(OllamaResponse response) {
-        if (response == null || response.getResponse() == null) {
-            return "NO_SQL";
-        }
-
-        String rawResponse = response.getResponse().trim();
-
-        // Limpiar la respuesta
-        if (rawResponse.contains("```sql")) {
-            return rawResponse.split("```sql")[1].split("```")[0].trim();
-        } else if (rawResponse.contains("```")) {
-            return rawResponse.split("```")[1].trim();
-        }
-
-        // Remover comentarios y líneas vacías
-        String cleanSQL = rawResponse
-                .replaceAll("--.*$", "")
-                .replaceAll("//.*$", "")
-                .replaceAll("/\\*.*?\\*/", "")
-                .replaceAll("(?m)^\\s*$", "")
-                .trim();
-
-        // Asegurar que termina con punto y coma
-        if (!cleanSQL.endsWith(";") && !cleanSQL.isEmpty()) {
-            cleanSQL += ";";
-        }
-
-        return cleanSQL;
-    }
-
-
     private String buildSQLPrompt(String schemaContext, String userQuestion) {
         return """
         Eres un asistente de SQL para H2 Database. 
@@ -172,4 +139,32 @@ public class OllamaService {
             return false;
         }
     }
+
+    public String generateResponse(String prompt) {
+        OllamaRequest request = new OllamaRequest(currentModel, prompt);
+        request.setStream(false);
+
+        try {
+            OllamaResponse response = webClient.post()
+                    .uri("/api/generate")
+                    .bodyValue(request)
+                    .retrieve()
+                    .onStatus(status -> status.isError(), clientResponse -> {
+                        return Mono.error(new RuntimeException("Ollama API error: " + clientResponse.statusCode()));
+                    })
+                    .bodyToMono(OllamaResponse.class)
+                    .timeout(Duration.ofSeconds(60))
+                    .block();
+
+            if (response == null) {
+                return "Error: No response from Ollama";
+            }
+
+            return response.getResponse();
+
+        } catch (Exception e) {
+            return "Error communicating with Ollama: " + e.getMessage();
+        }
+    }
+
 }

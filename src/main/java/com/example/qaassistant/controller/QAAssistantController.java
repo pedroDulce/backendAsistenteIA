@@ -3,7 +3,7 @@ package com.example.qaassistant.controller;
 import com.example.qaassistant.model.Aplicacion;
 import com.example.qaassistant.model.EstadoAplicacion;
 import com.example.qaassistant.repository.AplicacionRepository;
-import com.example.qaassistant.service.QaRAGService;
+import com.example.qaassistant.service.rag.QaRAGService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

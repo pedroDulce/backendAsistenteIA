@@ -1,4 +1,4 @@
-package com.example.qaassistant.model;
+package com.example.qaassistant.model.rag;
 
 import jakarta.persistence.*;
 import lombok.Data;

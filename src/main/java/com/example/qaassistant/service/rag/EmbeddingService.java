@@ -1,6 +1,6 @@
-package com.example.qaassistant.service;
+package com.example.qaassistant.service.rag;
 
-import com.example.qaassistant.model.KnowledgeDocument;
+import com.example.qaassistant.model.rag.KnowledgeDocument;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
