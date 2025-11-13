@@ -2,19 +2,20 @@ package com.example.qaassistant.service.rag;
 
 import com.example.qaassistant.controller.ChatResponse;
 import com.example.qaassistant.model.rag.KnowledgeDocument;
+import com.example.qaassistant.service.ollama.OllamaService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.*;
 
 @Service
-public class QaRAGService {
+public class RagService {
 
     private final SimpleVectorStore vectorStore;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public QaRAGService(SimpleVectorStore vectorStore, JdbcTemplate jdbcTemplate) {
+    public RagService(SimpleVectorStore vectorStore, JdbcTemplate jdbcTemplate) {
         this.vectorStore = vectorStore;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -32,7 +33,7 @@ public class QaRAGService {
             return processWithRealData(question, relevantDocs);
         } else {
             System.out.println("📖 Consulta sobre conocimiento general");
-            return new ChatResponse(question, generateSuggestions(question), relevantDocs);
+            return new ChatResponse(question, question, generateSuggestions(question), relevantDocs);
         }
     }
 
@@ -70,7 +71,7 @@ public class QaRAGService {
             // 5. Formatear respuesta
             String answer = formatRealDataResponse(question, results, context);
 
-            return new ChatResponse(answer, generateSuggestions(question), new ArrayList<>());
+            return new ChatResponse(question, answer, generateSuggestions(question), new ArrayList<>());
 
         } catch (Exception e) {
             System.err.println("❌ Error ejecutando SQL en H2: " + e.getMessage());
@@ -82,7 +83,8 @@ public class QaRAGService {
                     "Error: " + e.getMessage() + "\n\n" +
                     "**Información de contexto:**\n" + fallbackAnswer;
 
-            return new ChatResponse(errorAnswer,
+            return new ChatResponse(question,
+                    errorAnswer,
                     Arrays.asList("Reintentar consulta",
                             "Ver datos de ejemplo",
                             "Ver esquema de base de datos"), new ArrayList<>());
@@ -259,10 +261,7 @@ public class QaRAGService {
     private ChatResponse generateResponseFromKnowledge(String question, List<KnowledgeDocument> context) {
         // Tu implementación actual aquí
         String answer = "He analizado tu pregunta sobre el catálogo QA...";
-        return new ChatResponse(answer, Arrays.asList(
-                "Ver datos reales",
-                "Consultar ranking",
-                "Ver actividades"), new ArrayList<>());
+        return new ChatResponse(question, answer, generateSuggestions(question), new ArrayList<>());
     }
 
     private List<String> generateSuggestions(String question) {

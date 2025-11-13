@@ -3,7 +3,7 @@ package com.example.qaassistant.controller;
 import com.example.qaassistant.model.Aplicacion;
 import com.example.qaassistant.model.EstadoAplicacion;
 import com.example.qaassistant.repository.AplicacionRepository;
-import com.example.qaassistant.service.rag.QaRAGService;
+import com.example.qaassistant.service.rag.RagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class QAAssistantController {
 
-    private final QaRAGService qaRAGService;
+    private final RagService ragService;
     private final AplicacionRepository aplicacionRepository;
 
-    public QAAssistantController(QaRAGService qaRAGService, AplicacionRepository aplicacionRepository) {
-        this.qaRAGService = qaRAGService;
+    public QAAssistantController(RagService ragService, AplicacionRepository aplicacionRepository) {
+        this.ragService = ragService;
         this.aplicacionRepository = aplicacionRepository;
     }
 
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        ChatResponse response = qaRAGService.processQuestion(request.getQuestion());
+        ChatResponse response = ragService.processQuestion(request.getQuestion());
         return ResponseEntity.ok(response);
     }
 

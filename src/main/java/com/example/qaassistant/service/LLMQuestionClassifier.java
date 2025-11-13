@@ -4,7 +4,7 @@ import com.example.qaassistant.service.ollama.OllamaService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LLMQuestionClassifier {
+public class LLMQuestionClassifier implements IClassifier {
 
     private final OllamaService ollamaService;
 

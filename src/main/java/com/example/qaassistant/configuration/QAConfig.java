@@ -1,25 +1,35 @@
 package com.example.qaassistant.configuration;
 
-import com.example.qaassistant.service.IntentClassifier;
 import com.example.qaassistant.service.LLMQuestionClassifier;
 import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.ollama.OllamaQueryService;
-import com.example.qaassistant.service.rag.QaRAGService;
+import com.example.qaassistant.service.ollama.OllamaService;
+import com.example.qaassistant.service.rag.RagService;
+import com.example.qaassistant.service.rag.SimpleVectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class QAConfig {
 
     @Bean
-    public IntentClassifier intentClassifier() {
-        return new IntentClassifier();
+    public LLMQuestionClassifier llmQuestionClassifier(OllamaService ollamaService) {
+        return new LLMQuestionClassifier(ollamaService);
     }
 
     @Bean
-    public UnifiedQAService unifiedQAService(LLMQuestionClassifier classifier,
+    public UnifiedQAService unifiedQAService(LLMQuestionClassifier intentClassifier,
                                              OllamaQueryService qaService,
-                                             QaRAGService ragService) {
-        return new UnifiedQAService(classifier, qaService, ragService);
+                                             RagService ragService) {
+        return new UnifiedQAService(intentClassifier, qaService, ragService);
     }
+
+    @Bean
+    public RagService ragService(SimpleVectorStore vectorStoreService,
+                                 JdbcTemplate jdbcTemplate) {
+        return new RagService(vectorStoreService, jdbcTemplate);
+    }
+
 }
+
