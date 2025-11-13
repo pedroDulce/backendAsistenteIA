@@ -14,11 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class QAConfig {
 
     @Bean
-    public LLMQuestionClassifier llmQuestionClassifier(OllamaService ollamaService) {
-        return new LLMQuestionClassifier(ollamaService);
-    }
-
-    @Bean
     public UnifiedQAService unifiedQAService(LLMQuestionClassifier intentClassifier,
                                              QAService qaService,
                                              RagService ragService) {
