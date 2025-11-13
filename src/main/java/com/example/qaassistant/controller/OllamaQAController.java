@@ -24,18 +24,12 @@ public class OllamaQAController {
         this.unifiedQAService = unifiedQAService;
         this.aplicacionRepository = aplicacionRepository;
     }
-
-    @PostMapping("/ask")
-    public ResponseEntity<UnifiedQueryResult> askQuestion(@RequestBody ChatRequest request) {
+    
+    @PostMapping("/chat")
+    public ResponseEntity<UnifiedQueryResult> chat(@RequestBody ChatRequest request) {
         UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
         return ResponseEntity.ok(result);
     }
-
-    /*@PostMapping("/chat")
-    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
-        return ResponseEntity.ok(result);
-    }*/
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
@@ -72,16 +66,6 @@ public class OllamaQAController {
         );
 
         return ResponseEntity.ok(testRanking);
-    }
-
-    public class ErrorResponse {
-        private String error;
-
-        public ErrorResponse(String s) {
-            this.error = s;
-        }
-
-        // constructores, getters y setters
     }
 
 }

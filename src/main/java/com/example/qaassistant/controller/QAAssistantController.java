@@ -24,8 +24,8 @@ public class QAAssistantController {
     }
 
     @PostMapping("/chat")
-    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        ChatResponse response = ragService.processQuestion(request.getQuestion());
+    public ResponseEntity<RagResponse> chat(@RequestBody ChatRequest request) {
+        RagResponse response = ragService.processQuestion(request.getQuestion());
         return ResponseEntity.ok(response);
     }
 

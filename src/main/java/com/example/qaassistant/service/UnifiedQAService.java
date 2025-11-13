@@ -1,6 +1,6 @@
 package com.example.qaassistant.service;
 
-import com.example.qaassistant.controller.ChatResponse;
+import com.example.qaassistant.controller.RagResponse;
 import com.example.qaassistant.model.ollama.QueryResult;
 import com.example.qaassistant.service.rag.RagService;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class UnifiedQAService {
                 QueryResult sqlResult = qaService.processNaturalLanguageQuery(question);
                 return UnifiedQueryResult.fromSQLResult(sqlResult, intent);
             } else {
-                ChatResponse ragResult = ragService.processQuestion(question);
+                RagResponse ragResult = ragService.processQuestion(question);
                 return UnifiedQueryResult.fromRAGResult(ragResult, intent);
             }
 

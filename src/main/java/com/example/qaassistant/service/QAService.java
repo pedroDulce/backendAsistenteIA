@@ -41,6 +41,7 @@ public class QAService {
                 return new QueryResult(userQuestion, null, null,
                         "No pude generar una consulta para tu pregunta.", cleanSQL, false);
             }
+            System.out.println("=== EJECUTANDO QUERY: " + cleanSQL + " ===");
             // 4. Ejecutar consulta con RowMapper personalizado
             List<Map<String, Object>> results = jdbcTemplate.query(cleanSQL, new ColumnMapRowMapper() {
                 @Override
