@@ -33,9 +33,9 @@ public class LLMQuestionClassifier implements IClassifier {
 
         System.out.println("DEBUG - LLM Intent Classification Response: " + response);
 
-        if (response.trim().equalsIgnoreCase("SQL")) {
+        if (response.trim().equalsIgnoreCase("SQL.")) {
             return QuestionIntent.SQL;
-        } else if (response.equalsIgnoreCase("RAG")) {
+        } else if (response.equalsIgnoreCase("RAG.")) {
             return QuestionIntent.RAG;
         } else {
             // Por defecto, usar RAG
