@@ -2,6 +2,8 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.OllamaRequest;
 import com.example.qaassistant.model.ollama.OllamaResponse;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,12 @@ public class OllamaService {
     public String generateSQLQuery(String schemaContext, String userQuestion) {
         String prompt = buildSQLPrompt(schemaContext, userQuestion);
 
+        System.out.println("=== DEBUG PROMPT ===");
+        System.out.println(prompt);
+        System.out.println("=====================");
+
         OllamaRequest request = new OllamaRequest(currentModel, prompt);
+        request.setStream(false); // Asegurar que no sea stream
 
         try {
             OllamaResponse response = webClient.post()
@@ -36,9 +43,14 @@ public class OllamaService {
                     .onStatus(status -> status.isError(), clientResponse -> {
                         return Mono.error(new RuntimeException("Ollama API error: " + clientResponse.statusCode()));
                     })
-                    .bodyToMono(OllamaResponse.class)
+                    .bodyToMono(OllamaResponse.class)  // Deserializar directamente a OllamaResponse
                     .timeout(Duration.ofSeconds(60))
                     .block();
+
+            System.out.println("=== DEBUG OLLAMA RESPONSE OBJECT ===");
+            System.out.println("Response: " + (response != null ? response.getResponse() : "null"));
+            System.out.println("Done: " + (response != null ? response.isDone() : "null"));
+            System.out.println("===============================");
 
             if (response == null) {
                 return "Error: No response from Ollama";
@@ -47,6 +59,8 @@ public class OllamaService {
             return cleanSQLResponse(response.getResponse());
 
         } catch (Exception e) {
+            System.out.println("=== DEBUG ERROR ===");
+            e.printStackTrace();
             return "Error communicating with Ollama: " + e.getMessage();
         }
     }
@@ -93,6 +107,7 @@ public class OllamaService {
         }
     }
 
+
     private String extractSQLFromResponse(OllamaResponse response) {
         if (response == null || response.getResponse() == null) {
             return "NO_SQL";
@@ -123,26 +138,24 @@ public class OllamaService {
         return cleanSQL;
     }
 
+
     private String buildSQLPrompt(String schemaContext, String userQuestion) {
         return """
-            Eres un experto en SQL para H2 Database. Genera SOLO la consulta SQL sin explicaciones.
-            
-            ESQUEMA:
-            %s
-            
-            REGLAS:
-            1. Devuelve SOLO SQL válido para H2
-            2. Usa solo tablas/columnas del esquema
-            3. Si no se puede traducir a SQL, devuelve: NO_SQL
-            4. Para preguntas sobre "todo" o "listar": SELECT * FROM ACTIVIDAD_QA
-            5. Para contar: SELECT COUNT(*) FROM ACTIVIDAD_QA
-            6. Para agrupar: SELECT APLICACION_NOMBRE, COUNT(*) FROM ACTIVIDAD_QA GROUP BY APLICACION_NOMBRE
-            7. Para filtrar: usa WHERE con valores exactos como 'MARE', 'COMPLETADA'
-            
-            PREGUNTA: "%s"
-            
-            SQL:
-            """.formatted(schemaContext, userQuestion);
+        Eres un asistente de SQL para H2 Database. 
+        
+        ESQUEMA:
+        %s
+        
+        INSTRUCCIONES:
+        - Responde ÚNICAMENTE con la consulta SQL
+        - No incluyas explicaciones, comentarios o texto adicional
+        - Si no es posible generar SQL, responde exactamente: NO_SQL
+        - Usa solo las tablas y columnas del esquema proporcionado
+        
+        Para la pregunta: "%s"
+        
+        SQL:
+        """.formatted(schemaContext, userQuestion);
     }
 
     public boolean isOllamaRunning() {

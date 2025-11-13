@@ -24,10 +24,10 @@ public class OllamaQueryService {
         try {
             // 1. Obtener contexto del esquema
             String schemaContext = schemaProvider.getSchemaContext();
-
+            System.out.println("DEBUG - Schema context: " + schemaContext);
             // 2. Generar SQL usando Ollama
             String generatedSQL = ollamaService.generateSQLQuery(schemaContext, userQuestion);
-
+            System.out.println("DEBUG - Raw generated SQL: " + generatedSQL);
             // 3. Validar y limpiar SQL
             String cleanSQL = cleanSQLResponse(generatedSQL);
 
@@ -191,41 +191,37 @@ public class OllamaQueryService {
     }
 
     private String cleanSQLResponse(String sqlResponse) {
-        if (sqlResponse == null) return "NO_SQL";
-
-        String clean = sqlResponse.trim();
-
-        // Limpiar bloques de código markdown
-        if (clean.contains("```sql")) {
-            String[] parts = clean.split("```sql");
-            if (parts.length > 1) {
-                clean = parts[1].split("```")[0].trim();
-            }
-        } else if (clean.contains("```")) {
-            String[] parts = clean.split("```");
-            if (parts.length > 1) {
-                clean = parts[1].trim();
-            }
+        if (sqlResponse == null || sqlResponse.trim().isEmpty()) {
+            return "NO_SQL";
         }
 
-        // Remover comentarios
-        clean = clean.replaceAll("--.*$", "")
-                .replaceAll("//.*$", "")
-                .replaceAll("/\\*.*?\\*/", "")
-                .replaceAll("(?m)^\\s*$", "")
-                .trim();
+        String clean = sqlResponse.trim();
+        System.out.println("DEBUG - Raw response from Ollama: " + clean);
 
-        // Validar que sea SQL
-        if (clean.toUpperCase().startsWith("SELECT") ||
-                clean.toUpperCase().startsWith("INSERT") ||
-                clean.toUpperCase().startsWith("UPDATE") ||
-                clean.toUpperCase().startsWith("DELETE") ||
-                clean.toUpperCase().startsWith("WITH")) {
-
+        // Si la respuesta ya es un SQL válido (empieza con SELECT), usarlo directamente
+        if (clean.toUpperCase().startsWith("SELECT")) {
             if (!clean.endsWith(";")) {
                 clean += ";";
             }
             return clean;
+        }
+
+        // Si no, buscar SELECT en cualquier parte
+        if (clean.toUpperCase().contains("SELECT")) {
+            int selectIndex = clean.toUpperCase().indexOf("SELECT");
+            String possibleSQL = clean.substring(selectIndex).trim();
+
+            // Limpiar hasta el final o hasta que encuentre un carácter que no sea parte de SQL
+            // Podemos asumir que el SQL termina al final de la línea o con un punto y coma
+            int endIndex = possibleSQL.indexOf(';');
+            if (endIndex > 0) {
+                possibleSQL = possibleSQL.substring(0, endIndex + 1);
+            }
+
+            if (!possibleSQL.endsWith(";")) {
+                possibleSQL += ";";
+            }
+            return possibleSQL;
         }
 
         return "NO_SQL";
