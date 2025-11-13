@@ -2,7 +2,6 @@ package com.example.qaassistant.service;
 
 import com.example.qaassistant.controller.ChatResponse;
 import com.example.qaassistant.model.ollama.QueryResult;
-import com.example.qaassistant.service.ollama.OllamaQueryService;
 import com.example.qaassistant.service.rag.RagService;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +10,9 @@ public class UnifiedQAService {
 
     private final RagService ragService;
     private final LLMQuestionClassifier intentClassifier;
-    private final OllamaQueryService qaService;
+    private final QAService qaService;
 
-    public UnifiedQAService(LLMQuestionClassifier intentClassifier, OllamaQueryService qaService, RagService ragService) {
+    public UnifiedQAService(LLMQuestionClassifier intentClassifier, QAService qaService, RagService ragService) {
         this.intentClassifier = intentClassifier;
         this.qaService = qaService;
         this.ragService = ragService;

@@ -1,6 +1,8 @@
-package com.example.qaassistant.service.ollama;
+package com.example.qaassistant.service;
 
 import com.example.qaassistant.model.ollama.QueryResult;
+import com.example.qaassistant.service.ollama.DatabaseSchemaProvider;
+import com.example.qaassistant.service.ollama.OllamaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class OllamaQueryService {
+public class QAService {
 
     @Autowired
     private OllamaService ollamaService;

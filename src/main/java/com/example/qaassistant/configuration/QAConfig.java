@@ -2,7 +2,7 @@ package com.example.qaassistant.configuration;
 
 import com.example.qaassistant.service.LLMQuestionClassifier;
 import com.example.qaassistant.service.UnifiedQAService;
-import com.example.qaassistant.service.ollama.OllamaQueryService;
+import com.example.qaassistant.service.QAService;
 import com.example.qaassistant.service.ollama.OllamaService;
 import com.example.qaassistant.service.rag.RagService;
 import com.example.qaassistant.service.rag.SimpleVectorStore;
@@ -20,7 +20,7 @@ public class QAConfig {
 
     @Bean
     public UnifiedQAService unifiedQAService(LLMQuestionClassifier intentClassifier,
-                                             OllamaQueryService qaService,
+                                             QAService qaService,
                                              RagService ragService) {
         return new UnifiedQAService(intentClassifier, qaService, ragService);
     }
