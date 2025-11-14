@@ -11,7 +11,6 @@ import java.util.Optional;
 @Primary
 public class CachedUnifiedQAService {
 
-
     private final UnifiedQAService unifiedQAService;
     private final InMemoryQueryCacheService cacheService;
 

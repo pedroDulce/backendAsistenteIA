@@ -7,6 +7,7 @@ import com.example.qaassistant.model.dto.RankingDTO;
 import com.example.qaassistant.repository.AplicacionRepository;
 import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.UnifiedQueryResult;
+import com.example.qaassistant.service.ollama.CachedUnifiedQAService;
 import com.example.qaassistant.service.ollama.EnhancedQAService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,23 +26,23 @@ public class OllamaQAController {
 
     private static final Logger log = LoggerFactory.getLogger(OllamaQAController.class);
     private final AplicacionRepository aplicacionRepository;
-    private final UnifiedQAService unifiedQAService;
+    private final CachedUnifiedQAService cachedUnifiedQAService;
     private final EnhancedQAService enhancedQAService;
 
-    public OllamaQAController(UnifiedQAService unifiedQAService, AplicacionRepository aplicacionRepository,
+    public OllamaQAController(CachedUnifiedQAService cachedUnifiedQAService, AplicacionRepository aplicacionRepository,
                               EnhancedQAService enhancedQAService) {
-        this.unifiedQAService = unifiedQAService;
+        this.cachedUnifiedQAService = cachedUnifiedQAService;
         this.aplicacionRepository = aplicacionRepository;
         this.enhancedQAService = enhancedQAService;
     }
     
-    @PostMapping("/chat")
+    @PostMapping("/old-chat")
     public ResponseEntity<UnifiedQueryResult> chat(@RequestBody ChatRequest request) {
-        UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
+        UnifiedQueryResult result = cachedUnifiedQAService.processQuestion(request.getQuestion());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/ask-enhanced")
+    @PostMapping("/ask-enhanced")    //ask-enhanced
     public ResponseEntity<UnifiedQueryResult> askEnhancedQuestion(@RequestBody ChatRequest request) {
         log.info("Procesando consulta mejorada: {}", request.getQuestion());
 

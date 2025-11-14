@@ -1,8 +1,9 @@
 package com.example.qaassistant.configuration;
 
 import com.example.qaassistant.service.LLMQuestionClassifier;
-import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.QAService;
+import com.example.qaassistant.service.UnifiedQAService;
+import com.example.qaassistant.service.ollama.CachedUnifiedQAService;
 import com.example.qaassistant.service.ollama.EnhancedQAService;
 import com.example.qaassistant.service.ollama.OllamaService;
 import com.example.qaassistant.service.ollama.QueryComplexityAnalyzer;
@@ -23,10 +24,10 @@ public class QAConfig {
 
     @Bean
     @Primary
-    public EnhancedQAService enhancedQAService(UnifiedQAService unifiedQAService,
+    public EnhancedQAService enhancedQAService(CachedUnifiedQAService cachedUnifiedQAService,
                                                QueryComplexityAnalyzer complexityAnalyzer,
                                                OllamaService ollamaService) {
-        return new EnhancedQAService(unifiedQAService, complexityAnalyzer, ollamaService);
+        return new EnhancedQAService(cachedUnifiedQAService, complexityAnalyzer, ollamaService);
     }
     @Bean
     public UnifiedQAService unifiedQAService(LLMQuestionClassifier intentClassifier,

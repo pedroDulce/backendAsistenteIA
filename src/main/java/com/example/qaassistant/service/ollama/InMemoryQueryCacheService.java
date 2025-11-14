@@ -2,22 +2,9 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.service.IQueryCacheService;
 import com.example.qaassistant.service.UnifiedQueryResult;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-// InMemoryQueryCacheService.java - Versión completamente corregida
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,6 +15,7 @@ import java.util.stream.Collectors;
 @Primary
 public class InMemoryQueryCacheService implements IQueryCacheService {
 
+    private static final Logger log = LoggerFactory.getLogger(InMemoryQueryCacheService.class);
     private final Map<String, CachedResult> cache = new ConcurrentHashMap<>();
     private final Map<String, Integer> queryFrequency = new ConcurrentHashMap<>();
     private static final long CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 horas
@@ -44,18 +32,18 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
         if (cached != null && !isExpired(cached)) {
             cacheHits++;
-            System.out.println("🎯 CACHE HIT - Consulta encontrada en cache: \"" +
+            log.info("🎯 CACHE HIT - Consulta encontrada en cache: \"" +
                     truncateText(question, 50) + "\"");
-            System.out.println("📊 Estadísticas Cache - Hits: " + cacheHits +
+            log.info("📊 Estadísticas Cache - Hits: " + cacheHits +
                     ", Misses: " + cacheMisses + ", Almacenados: " + cacheStores);
             return Optional.of(cached.getResult());
         } else {
             cacheMisses++;
             if (cached != null) {
                 cache.remove(key);
-                System.out.println("🧹 Entrada de cache expirada eliminada");
+                log.info("🧹 Entrada de cache expirada eliminada");
             }
-            System.out.println("❌ CACHE MISS - Consulta NO encontrada: \"" +
+            log.info("❌ CACHE MISS - Consulta NO encontrada: \"" +
                     truncateText(question, 50) + "\"");
             return Optional.empty();
         }
@@ -67,12 +55,12 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
         cache.put(key, new CachedResult(result, System.currentTimeMillis()));
         cacheStores++;
 
-        System.out.println("💾 NUEVA ENTRADA EN CACHE");
-        System.out.println("   Pregunta: \"" + truncateText(question, 60) + "\"");
-        System.out.println("   Intent: " + result.getIntent());
-        System.out.println("   Resultados: " +
+        log.info("💾 NUEVA ENTRADA EN CACHE");
+        log.info("   Pregunta: \"" + truncateText(question, 60) + "\"");
+        log.info("   Intent: " + result.getIntent());
+        log.info("   Resultados: " +
                 (result.getRawResults() != null ? result.getRawResults().size() : 0) + " registros");
-        System.out.println("   Tamaño total cache: " + cache.size() + " entradas");
+        log.info("   Tamaño total cache: " + cache.size() + " entradas");
     }
 
     @Override
@@ -145,7 +133,7 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     private long calculateCacheSize() {
         if (cache.values() == null || cache.values().isEmpty()) {
-            return (long) 0;
+            return 0;
         }
         // Estimación simple del tamaño en memoria
         return cache.values().stream()
@@ -156,7 +144,7 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     private long findOldestEntryAge() {
         if (cache.values() == null || cache.values().isEmpty()) {
-            return (long) 0;
+            return 0;
         }
         return cache.values().stream()
                 .mapToLong(timestamp -> (System.currentTimeMillis() - timestamp.getTimestamp()) / 1000)
@@ -171,7 +159,7 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
         cacheHits = 0;
         cacheMisses = 0;
         cacheStores = 0;
-        System.out.println("🗑️  Cache limpiada completamente");
+        log.info("🗑️  Cache limpiada completamente");
     }
 
     // Clase interna para almacenar resultados cacheados

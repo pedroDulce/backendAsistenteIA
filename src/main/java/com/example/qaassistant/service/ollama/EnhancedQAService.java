@@ -18,14 +18,14 @@ public class EnhancedQAService {
 
     private static final Logger log = LoggerFactory.getLogger(EnhancedQAService.class);
 
-    private final UnifiedQAService unifiedQAService;
+    private final CachedUnifiedQAService cachedUnifiedQAService;
     private final QueryComplexityAnalyzer complexityAnalyzer;
     private final OllamaService ollamaService;
 
-    public EnhancedQAService(UnifiedQAService unifiedQAService,
+    public EnhancedQAService(CachedUnifiedQAService cachedUnifiedQAService,
                              QueryComplexityAnalyzer complexityAnalyzer,
                              OllamaService ollamaService) {
-        this.unifiedQAService = unifiedQAService;
+        this.cachedUnifiedQAService = cachedUnifiedQAService;
         this.complexityAnalyzer = complexityAnalyzer;
         this.ollamaService = ollamaService;
     }
@@ -45,7 +45,7 @@ public class EnhancedQAService {
             } else if (complexity == ComplexityLevel.MEDIUM) {
                 result = handleMediumComplexityQuery(question);
             } else {
-                result = unifiedQAService.processQuestion(question);
+                result = cachedUnifiedQAService.processQuestion(question);
             }
 
             long executionTime = System.currentTimeMillis() - startTime;
@@ -68,7 +68,7 @@ public class EnhancedQAService {
 
         for (String subQuery : subQueries) {
             try {
-                UnifiedQueryResult result = unifiedQAService.processQuestion(subQuery);
+                UnifiedQueryResult result = cachedUnifiedQAService.processQuestion(subQuery);
                 subResults.add(result);
             } catch (Exception e) {
                 log.warn("Error en subconsulta: {}", subQuery, e);
@@ -84,7 +84,7 @@ public class EnhancedQAService {
     private UnifiedQueryResult handleMediumComplexityQuery(String question) {
         // Para consultas de complejidad media, procesar normalmente
         // pero con timeout más corto o lógica adicional si es necesario
-        return unifiedQAService.processQuestion(question);
+        return cachedUnifiedQAService.processQuestion(question);
     }
 
     private List<String> splitComplexQuery(String complexQuestion) {
