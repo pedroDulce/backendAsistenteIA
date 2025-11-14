@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class IntentClassifier implements IClassifier {
+public class ArtesanalIntentClassifier implements IClassifier {
 
     private static final Set<String> SQL_KEYWORDS = Set.of(
             "listar", "contar", "cuántos", "cuántas", "mostrar", "buscar",

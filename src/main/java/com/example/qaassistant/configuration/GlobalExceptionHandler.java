@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.concurrent.TimeoutException;
 
-// GlobalExceptionHandler.java
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

@@ -1,4 +1,4 @@
-package com.example.qaassistant.repository;
+package com.example.qaassistant.repository.ollama;
 
 import com.example.qaassistant.model.ollama.SuccessfulQuery;
 import org.springframework.data.domain.Pageable;

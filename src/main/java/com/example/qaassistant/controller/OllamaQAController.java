@@ -1,7 +1,8 @@
 package com.example.qaassistant.controller;
 
-import com.example.qaassistant.model.Aplicacion;
-import com.example.qaassistant.model.EstadoAplicacion;
+import com.example.qaassistant.model.aplicacion.Aplicacion;
+import com.example.qaassistant.model.aplicacion.EstadoAplicacion;
+import com.example.qaassistant.model.dto.RankingDTO;
 import com.example.qaassistant.repository.AplicacionRepository;
 import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.UnifiedQueryResult;

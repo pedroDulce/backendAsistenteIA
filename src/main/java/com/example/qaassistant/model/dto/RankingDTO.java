@@ -1,7 +1,7 @@
-package com.example.qaassistant.controller;
+package com.example.qaassistant.model.dto;
 
-import com.example.qaassistant.model.Aplicacion;
-import com.example.qaassistant.model.EstadoAplicacion;
+import com.example.qaassistant.model.aplicacion.Aplicacion;
+import com.example.qaassistant.model.aplicacion.EstadoAplicacion;
 import lombok.Data;
 
 import java.time.LocalDateTime;

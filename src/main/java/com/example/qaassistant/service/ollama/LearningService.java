@@ -2,7 +2,7 @@ package com.example.qaassistant.service.ollama;
 
 // LearningService.java
 import com.example.qaassistant.model.ollama.SuccessfulQuery;
-import com.example.qaassistant.repository.SuccessfulQueryRepository;
+import com.example.qaassistant.repository.ollama.SuccessfulQueryRepository;
 import com.example.qaassistant.service.rag.SimpleVectorStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
