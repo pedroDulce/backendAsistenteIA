@@ -122,4 +122,125 @@ public class SimpleVectorStore {
     public int size() {
         return documents.size();
     }
+
+    /*** mecanismo de limpieza **/
+    public void deduplicateVectorDB() {
+        try {
+            log.info("... Iniciando limpieza de base de datos vectorial...");
+
+            // Estrategia: usar tu servicio existente para buscar documentos comunes
+            List<String> testQueries = Arrays.asList(
+                    "modelo de datos",
+                    "entidades del sistema",
+                    "pruebas QA",
+                    "itinerarios calidad",
+                    "aplicaciones",
+                    "ranking cobertura"
+            );
+
+            Set<KnowledgeDocument> allDocs = new HashSet<>();
+
+            for (String query : testQueries) {
+                try {
+                    // Asumiendo que tu servicio puede devolver los documentos encontrados
+                    // Necesitarás adaptar esto según tu implementación
+                    List<KnowledgeDocument> docs = searchDocuments(query);
+                    allDocs.addAll(docs);
+                    log.info("🔍 Query '" + query + "' encontró: " + docs.size() + " documentos");
+                } catch (Exception e) {
+                    log.error("⚠️ Error en query '" + query, e);
+                }
+            }
+
+            log.info("📊 Total documentos recuperados: " + allDocs.size());
+
+            // Identificar duplicados por contenido
+            Map<String, List<KnowledgeDocument>> contentGroups = allDocs.stream()
+                    .collect(Collectors.groupingBy(doc -> normalizeContent(doc.getContent())));
+
+            // Encontrar duplicados
+            Map<String, List<KnowledgeDocument>> duplicates = contentGroups.entrySet().stream()
+                    .filter(entry -> entry.getValue().size() > 1)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            log.info("🔍 Grupos de duplicados encontrados: " + duplicates.size());
+
+            // Mantener solo documentos únicos
+            List<KnowledgeDocument> uniqueDocs = contentGroups.values().stream()
+                    .map(group -> group.get(0)) // Primer documento de cada grupo
+                    .collect(Collectors.toList());
+
+            log.info("✅ Documentos únicos: " + uniqueDocs.size());
+
+            if (!duplicates.isEmpty()) {
+                // Aquí necesitarías implementar la lógica para reindexar
+                // Depende de cómo manejes tu vector store
+                reindexVectorStore(uniqueDocs);
+
+                log.info("🎉 Base de datos limpiada: " +
+                        allDocs.size() + " -> " + uniqueDocs.size() + " documentos");
+            } else {
+                log.info("✅ No se encontraron duplicados");
+            }
+
+            // Mostrar reporte de duplicados
+            printDuplicateReport(duplicates);
+
+        } catch (Exception e) {
+            log.error("❌ Error durante la limpieza: ", e);
+        }
+    }
+
+    public List<KnowledgeDocument> searchDocuments(String question) {
+
+        log.info("🔍 Buscando: " + question);
+
+        // Ejemplo: si tu servicio tiene un método para buscar
+        return this.similaritySearch(question);
+    }
+
+
+    private String normalizeContent(String content) {
+        if (content == null) return "null";
+        // Normalizar contenido para comparación
+        return content.replaceAll("\\s+", " ")
+                .trim()
+                .toLowerCase();
+    }
+
+    // Método que necesitas adaptar según tu implementación
+
+    // Método para reindexar - adaptar según tu implementación
+    private void reindexVectorStore(List<KnowledgeDocument> uniqueDocs) {
+        // TODO: Implementar la lógica de reindexación según tu vector store
+        log.info("🔄 Reindexando con " + uniqueDocs.size() + " documentos únicos...");
+
+        // 1. Limpiar vector store existente
+        this.deleteAll();
+
+        // 2. Añadir documentos únicos
+        this.addDocs(uniqueDocs);
+    }
+
+    private void printDuplicateReport(Map<String, List<KnowledgeDocument>> duplicates) {
+        if (duplicates.isEmpty()) {
+            log.info("✅ No se encontraron duplicados");
+            return;
+        }
+
+        log.info("\n📋 INFORME DE DUPLICADOS");
+        log.info("========================");
+
+        duplicates.forEach((content, docs) -> {
+            log.info("\n🔍 DUPLICADO (" + docs.size() + " veces):");
+            log.info("Contenido: " + content.substring(0, Math.min(100, content.length())) + "...");
+            docs.forEach(doc -> {
+                log.info("  - ID: " + doc.getId());
+                if (doc.getMetadata() != null && !doc.getMetadata().isEmpty()) {
+                    log.info("    Metadata: " + doc.getMetadata());
+                }
+            });
+        });
+    }
+
 }
