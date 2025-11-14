@@ -1,11 +1,13 @@
 package com.example.qaassistant.service;
 
 import com.example.qaassistant.service.ollama.OllamaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LLMQuestionClassifier implements IClassifier {
-
+    private static final Logger log = LoggerFactory.getLogger(LLMQuestionClassifier.class);
     private final OllamaService ollamaService;
 
     public LLMQuestionClassifier(OllamaService ollamaService) {
@@ -31,7 +33,7 @@ public class LLMQuestionClassifier implements IClassifier {
 
         String response = ollamaService.generateResponse(prompt);
 
-        System.out.println("DEBUG - LLM Intent Classification Response: " + response);
+        log.info("DEBUG - LLM Intent Classification Response: " + response);
 
         if (response.trim().equalsIgnoreCase("SQL.")) {
             return QuestionIntent.SQL;

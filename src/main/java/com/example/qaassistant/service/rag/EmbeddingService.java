@@ -1,6 +1,8 @@
 package com.example.qaassistant.service.rag;
 
 import com.example.qaassistant.model.rag.KnowledgeDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,7 +12,8 @@ import java.util.Random;
 @Service
 public class EmbeddingService {
 
-    // Simulamos embeddings para la demo
+    private static final Logger log = LoggerFactory.getLogger(EmbeddingService.class);
+            
     public List<Float> generateEmbedding(String text) {
         // En una implementación real, usarías OpenAI o modelo local
         // Para demo, generamos un embedding simulado
@@ -48,10 +51,10 @@ public class EmbeddingService {
 
     public void indexDocuments(List<KnowledgeDocument> documents) {
         // Aquí va tu lógica específica para indexar en tu vector store
-        System.out.println("📚 Indexando " + documents.size() + " documentos...");
+        log.info("📚 Indexando " + documents.size() + " documentos...");
 
         for (KnowledgeDocument doc : documents) {
-            System.out.println(" - " + doc.getContent().substring(0, Math.min(50, doc.getContent().length())) + "...");
+            log.info(" - " + doc.getContent().substring(0, Math.min(50, doc.getContent().length())) + "...");
             // Tu lógica de indexación aquí
         }
     }

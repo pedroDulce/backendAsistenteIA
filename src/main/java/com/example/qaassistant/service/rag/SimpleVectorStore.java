@@ -1,12 +1,15 @@
 package com.example.qaassistant.service.rag;
 
 import com.example.qaassistant.model.rag.KnowledgeDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class SimpleVectorStore {
+    private static final Logger log = LoggerFactory.getLogger(SimpleVectorStore.class);
     private final List<KnowledgeDocument> documents = new ArrayList<>();
     private final Map<String, float[]> embeddings = new HashMap<>();
 
@@ -26,13 +29,13 @@ public class SimpleVectorStore {
             documents.add(doc);
             embeddings.put(doc.getId(), generateEmbedding(doc.getContent()));
         }
-        System.out.println("✅ VectorStore: Añadidos " + docs.size() + " documentos");
+        log.info("✅ VectorStore: Añadidos " + docs.size() + " documentos");
     }
 
     public void addOne(KnowledgeDocument doc) {
         documents.add(doc);
         embeddings.put(doc.getId(), generateEmbedding(doc.getContent()));
-        System.out.println("✅ VectorStore: Añadido documento");
+        log.info("✅ VectorStore: Añadido documento");
     }
 
     public List<KnowledgeDocument> similaritySearch(String query) {

@@ -1,6 +1,8 @@
 package com.example.qaassistant.model.rag;
 
 import com.example.qaassistant.service.rag.EmbeddingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,6 +13,7 @@ import java.util.Map;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
     private final EmbeddingService knowledgeBaseService;
 
     @Autowired
@@ -20,7 +23,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("🚀 Inicializando base de conocimiento QA...");
+        log.info("🚀 Inicializando base de conocimiento QA...");
 
         List<KnowledgeDocument> documents = crearDocumentosCompletos();
 
@@ -30,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
         // Si usas tu propio servicio
         knowledgeBaseService.indexDocuments(documents);
 
-        System.out.println("✅ Base de conocimiento inicializada con " + documents.size() + " documentos");
+        log.info("✅ Base de conocimiento inicializada con " + documents.size() + " documentos");
     }
 
     private List<KnowledgeDocument> crearDocumentosCompletos() {

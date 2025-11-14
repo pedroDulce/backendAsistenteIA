@@ -3,6 +3,8 @@ package com.example.qaassistant.service;
 import com.example.qaassistant.model.ollama.QueryResult;
 import com.example.qaassistant.service.ollama.DatabaseSchemaProvider;
 import com.example.qaassistant.service.ollama.OllamaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +19,7 @@ import java.util.Map;
 @Service
 public class QAService {
 
+    private static final Logger log = LoggerFactory.getLogger(QAService.class);
     @Autowired
     private OllamaService ollamaService;
 
@@ -30,10 +33,10 @@ public class QAService {
         try {
             // 1. Obtener contexto del esquema
             String schemaContext = schemaProvider.getSchemaContext();
-            System.out.println("DEBUG - Schema context: " + schemaContext);
+            log.info("DEBUG - Schema context: " + schemaContext);
             // 2. Generar SQL usando Ollama
             String generatedSQL = ollamaService.generateSQLQuery(schemaContext, userQuestion);
-            System.out.println("DEBUG - Raw generated SQL: " + generatedSQL);
+            log.info("DEBUG - Raw generated SQL: " + generatedSQL);
             // 3. Validar y limpiar SQL
             String cleanSQL = cleanSQLResponse(generatedSQL);
 
@@ -41,7 +44,7 @@ public class QAService {
                 return new QueryResult(userQuestion, null, null,
                         "No pude generar una consulta para tu pregunta.", cleanSQL, false);
             }
-            System.out.println("=== EJECUTANDO QUERY: " + cleanSQL + " ===");
+            log.info("=== EJECUTANDO QUERY: " + cleanSQL + " ===");
             // 4. Ejecutar consulta con RowMapper personalizado
             List<Map<String, Object>> results = jdbcTemplate.query(cleanSQL, new ColumnMapRowMapper() {
                 @Override
@@ -56,32 +59,32 @@ public class QAService {
             });
 
             // En tu método processNaturalLanguageQuery, justo antes de llamar a formatResultsForDisplay:
-            System.out.println("=== DEBUG RESULTS BEFORE FORMATTING ===");
-            System.out.println("Number of results: " + results.size());
+            log.info("=== DEBUG RESULTS BEFORE FORMATTING ===");
+            log.info("Number of results: " + results.size());
             if (!results.isEmpty()) {
-                System.out.println("First result keys: " + results.get(0).keySet());
-                System.out.println("First result values: " + results.get(0));
+                log.info("First result keys: " + results.get(0).keySet());
+                log.info("First result values: " + results.get(0));
 
                 // Verificar tipos de datos
                 Map<String, Object> firstRow = results.get(0);
                 for (Map.Entry<String, Object> entry : firstRow.entrySet()) {
-                    System.out.println("Column '" + entry.getKey() + "' -> Type: " +
+                    log.info("Column '" + entry.getKey() + "' -> Type: " +
                             (entry.getValue() != null ? entry.getValue().getClass().getSimpleName() : "NULL") +
                             ", Value: " + entry.getValue());
                 }
             }
-            System.out.println("======================================");
+            log.info("======================================");
 
             // 5. Formatear respuesta
             String formattedResults = formatResultsForDisplay(results);
-            System.out.println("=== formattedResults::: " + formattedResults);
+            log.info("=== formattedResults::: " + formattedResults);
             String explanation = buildExplanation(userQuestion, cleanSQL, results.size());
 
             return new QueryResult(userQuestion, cleanSQL, results,
                     formattedResults, explanation, true);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("❌ Fatal Error in processNaturalLanguageQuery: " + e);
             return new QueryResult(userQuestion, null, null,
                     "Error procesando la consulta: " + e.getMessage(),
                     "Intenta reformular tu pregunta.", false);
@@ -115,9 +118,8 @@ public class QAService {
             return formatted.toString();
 
         } catch (Exception e) {
-            System.out.println("=== DEBUG ERROR en formatResultsForDisplay ===");
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("=== DEBUG ERROR en formatResultsForDisplay ===");
+            log.error("Error: " + e.getMessage());
 
             // Fallback: mostrar información básica
             return "Resultados: " + results.size() + " registros encontrados. " +
@@ -169,6 +171,7 @@ public class QAService {
             return stringValue;
 
         } catch (Exception e) {
+            log.error("Error in formatValue: ", e);
             return "[Error: " + e.getMessage() + "]";
         }
     }
@@ -190,7 +193,7 @@ public class QAService {
         }
 
         String clean = sqlResponse.trim();
-        System.out.println("DEBUG - Raw SQL to clean: " + clean);
+        log.info("DEBUG - Raw SQL to clean: " + clean);
 
         // Validación básica - si contiene SELECT y FROM, es SQL válido
         if (clean.toUpperCase().contains("SELECT") && clean.toUpperCase().contains("FROM")) {

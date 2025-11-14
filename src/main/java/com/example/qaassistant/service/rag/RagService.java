@@ -2,6 +2,8 @@ package com.example.qaassistant.service.rag;
 
 import com.example.qaassistant.controller.transfer.RagResponse;
 import com.example.qaassistant.model.rag.KnowledgeDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +12,7 @@ import java.util.*;
 @Service
 public class RagService {
 
+    private static final Logger log = LoggerFactory.getLogger(RagService.class);
     private final SimpleVectorStore vectorStore;
     private final JdbcTemplate jdbcTemplate;
 
@@ -20,18 +23,18 @@ public class RagService {
     }
 
     public RagResponse processQuestion(String question) {
-        System.out.println("🔍 Procesando pregunta: " + question);
+        log.info("🔍 Procesando pregunta: " + question);
 
         // 1. Buscar en conocimiento vectorial
         List<KnowledgeDocument> relevantDocs = vectorStore.similaritySearch(question);
-        System.out.println("📚 Documentos relevantes encontrados: " + relevantDocs.size());
+        log.info("📚 Documentos relevantes encontrados: " + relevantDocs.size());
 
         // 2. Determinar si necesita datos reales de H2
         if (needsRealData(question)) {
-            System.out.println("🎯 Consulta requiere datos reales de H2");
+            log.info("🎯 Consulta requiere datos reales de H2");
             return processWithRealData(question, relevantDocs);
         } else {
-            System.out.println("📖 Consulta sobre conocimiento general");
+            log.info("📖 Consulta sobre conocimiento general");
             return new RagResponse(question, question, generateSuggestions(question), relevantDocs);
         }
     }
@@ -57,15 +60,15 @@ public class RagService {
 
     private RagResponse processWithRealData(String question, List<KnowledgeDocument> context) {
         try {
-            System.out.println("🔄 Conectando con H2 para datos reales...");
+            log.info("🔄 Conectando con H2 para datos reales...");
 
             // 3. Generar y ejecutar SQL en H2
             String sqlQuery = generateSQLFromQuestion(question, context);
-            System.out.println("📊 SQL a ejecutar: " + sqlQuery);
+            log.info("📊 SQL a ejecutar: " + sqlQuery);
 
             // 4. Ejecutar en H2
             List<Map<String, Object>> results = jdbcTemplate.queryForList(sqlQuery);
-            System.out.println("✅ Resultados obtenidos: " + results.size());
+            log.info("✅ Resultados obtenidos: " + results.size());
 
             // 5. Formatear respuesta
             String answer = formatRealDataResponse(question, results, context);
@@ -73,8 +76,7 @@ public class RagService {
             return new RagResponse(question, answer, generateSuggestions(question), new ArrayList<>());
 
         } catch (Exception e) {
-            System.err.println("❌ Error ejecutando SQL en H2: " + e.getMessage());
-            e.printStackTrace();
+            log.error("❌ Error ejecutando SQL en H2: " + e.getMessage());
 
             // Fallback: responder con conocimiento + info del error
             String fallbackAnswer = generateResponseFromKnowledge(question, context).answer();

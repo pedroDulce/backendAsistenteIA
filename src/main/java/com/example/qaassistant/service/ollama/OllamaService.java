@@ -2,6 +2,8 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.OllamaRequest;
 import com.example.qaassistant.model.ollama.OllamaResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import java.time.Duration;
 
 @Service
 public class OllamaService {
+
+    private static final Logger log = LoggerFactory.getLogger(OllamaService.class);
 
     private final WebClient webClient;
     private String currentModel = "llama3.2:1b";
@@ -26,9 +30,9 @@ public class OllamaService {
     public String generateSQLQuery(String schemaContext, String userQuestion) {
         String prompt = buildSQLPrompt(schemaContext, userQuestion);
 
-        System.out.println("=== DEBUG PROMPT ===");
-        System.out.println(prompt);
-        System.out.println("=====================");
+        log.info("=== DEBUG PROMPT ===");
+        log.info(prompt);
+        log.info("=====================");
 
         OllamaRequest request = new OllamaRequest(currentModel, prompt);
         request.setStream(false); // Asegurar que no sea stream
@@ -45,10 +49,10 @@ public class OllamaService {
                     .timeout(Duration.ofSeconds(60))
                     .block();
 
-            System.out.println("=== DEBUG OLLAMA RESPONSE OBJECT ===");
-            System.out.println("Response: " + (response != null ? response.getResponse() : "null"));
-            System.out.println("Done: " + (response != null ? response.isDone() : "null"));
-            System.out.println("===============================");
+            log.info("=== DEBUG OLLAMA RESPONSE OBJECT ===");
+            log.info("Response: " + (response != null ? response.getResponse() : "null"));
+            log.info("Done: " + (response != null ? response.isDone() : "null"));
+            log.info("===============================");
 
             if (response == null) {
                 return "Error: No response from Ollama";
@@ -57,8 +61,7 @@ public class OllamaService {
             return cleanSQLResponse(response.getResponse());
 
         } catch (Exception e) {
-            System.out.println("=== DEBUG ERROR ===");
-            e.printStackTrace();
+            log.error("=== DEBUG ERROR ===", e);
             return "Error communicating with Ollama: " + e.getMessage();
         }
     }
@@ -163,6 +166,7 @@ public class OllamaService {
             return response.getResponse();
 
         } catch (Exception e) {
+            log.error("Error communicating with Ollama ", e);
             return "Error communicating with Ollama: " + e.getMessage();
         }
     }
