@@ -40,8 +40,8 @@ public class CacheController {
         );
     }
 
-    @GetMapping("/frequent-queries")
-    public Map<String, Object> getFrequentQueries(@RequestParam(defaultValue = "10") int limit) {
+    @GetMapping("/frequent-queries/{limit}")
+    public Map<String, Object> getFrequentQueries(@PathVariable("limit") int limit) {
         return Map.of(
                 "frequentQueries", cacheService.getFrequentQueries(limit),
                 "limit", limit

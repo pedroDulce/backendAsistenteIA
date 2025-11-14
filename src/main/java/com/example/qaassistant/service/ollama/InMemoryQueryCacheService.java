@@ -83,6 +83,9 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     @Override
     public List<String> getFrequentQueries(int limit) {
+        if (queryFrequency.entrySet().isEmpty()) {
+            return new ArrayList<>();
+        }
         return queryFrequency.entrySet().stream()
                 .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
                 .limit(limit)
