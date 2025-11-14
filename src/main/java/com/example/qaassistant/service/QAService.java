@@ -74,6 +74,7 @@ public class QAService {
 
             // 5. Formatear respuesta
             String formattedResults = formatResultsForDisplay(results);
+            System.out.println("=== formattedResults::: " + formattedResults);
             String explanation = buildExplanation(userQuestion, cleanSQL, results.size());
 
             return new QueryResult(userQuestion, cleanSQL, results,
