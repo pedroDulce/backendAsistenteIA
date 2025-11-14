@@ -3,7 +3,6 @@ package com.example.qaassistant.service.rag;
 import com.example.qaassistant.model.rag.KnowledgeDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -195,10 +194,8 @@ public class SimpleVectorStore {
 
         log.info("🔍 Buscando: " + question);
 
-        // Ejemplo: si tu servicio tiene un método para buscar
         return this.similaritySearch(question);
     }
-
 
     private String normalizeContent(String content) {
         if (content == null) return "null";
@@ -208,16 +205,10 @@ public class SimpleVectorStore {
                 .toLowerCase();
     }
 
-    // Método que necesitas adaptar según tu implementación
-
-    // Método para reindexar - adaptar según tu implementación
     private void reindexVectorStore(List<KnowledgeDocument> uniqueDocs) {
-        // TODO: Implementar la lógica de reindexación según tu vector store
         log.info("🔄 Reindexando con " + uniqueDocs.size() + " documentos únicos...");
-
         // 1. Limpiar vector store existente
         this.deleteAll();
-
         // 2. Añadir documentos únicos
         this.addDocs(uniqueDocs);
     }
