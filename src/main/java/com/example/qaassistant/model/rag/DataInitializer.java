@@ -27,13 +27,13 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     public void run(String... args) throws Exception {
-        log.info("🚀 Inicializando base de conocimiento QA...");
+        log.info("🚀 DataInitializer: Inicializando base de conocimiento QA...");
 
         List<KnowledgeDocument> documents = crearDocumentosCompletos();
 
         // Verificar que los documentos tienen todos los campos
         for (KnowledgeDocument doc : documents) {
-            log.info("📄 Documento cargado: ID={}, Título={}, Contenido={} caracteres, Embedding={}",
+            log.info("📄DataInitializer: Documento cargado: ID={}, Título={}, Contenido={} caracteres, Embedding={}",
                     doc.getId(), doc.getTitle(),
                     doc.getContent() != null ? doc.getContent().length() : 0,
                     doc.getEmbedding() != null ? doc.getEmbedding().size() : 0);
@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
         // O si usas directamente el vector store:
         simpleVectorStore.addDocs(documents);
 
-        log.info("✅ Base de conocimiento inicializada con {} documentos", documents.size());
+        log.info("✅ DataInitializer: Base de conocimiento inicializada con {} documentos", documents.size());
     }
 
     private List<KnowledgeDocument> crearDocumentosCompletos() {

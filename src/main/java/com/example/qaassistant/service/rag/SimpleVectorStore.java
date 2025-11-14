@@ -34,7 +34,7 @@ public class SimpleVectorStore {
         for (KnowledgeDocument doc : docs) {
             addDocument(doc);
         }
-        log.info("✅ VectorStore: Añadidos " + docs.size() + " documentos");
+        log.info("✅ SimpleVectorStore: Añadidos " + docs.size() + " documentos");
     }
 
     public void addDocument(KnowledgeDocument doc) {
@@ -44,7 +44,7 @@ public class SimpleVectorStore {
             doc.setEmbedding(embedding);
         }
         documents.put(doc.getId(), doc);
-        log.debug("✅ VectorStore: Documento almacenado: {} - {}", doc.getId(), doc.getTitle());
+        log.debug("✅ SimpleVectorStore: Documento almacenado: {} - {}", doc.getId(), doc.getTitle());
     }
 
     public List<KnowledgeDocument> semanticSearch(String query, int topK) {
