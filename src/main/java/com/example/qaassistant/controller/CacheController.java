@@ -7,6 +7,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cache")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class CacheController {
 
     private final InMemoryQueryCacheService cacheService;

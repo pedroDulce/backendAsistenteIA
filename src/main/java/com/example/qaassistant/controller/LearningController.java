@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/learning")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class LearningController {
 
     private final LearningService learningService;
