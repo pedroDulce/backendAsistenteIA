@@ -3,6 +3,7 @@ package com.example.qaassistant.service;
 import com.example.qaassistant.controller.transfer.RagResponse;
 import com.example.qaassistant.model.ollama.QueryResult;
 import com.example.qaassistant.service.rag.RagService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +20,7 @@ public class UnifiedQAService {
     }
 
     public UnifiedQueryResult processQuestion(String question) {
-        try {
+        /*try {
             // 1. Clasificar la intención
             QuestionIntent intent = intentClassifier.classify(question);
 
@@ -39,6 +40,7 @@ public class UnifiedQAService {
 
         } catch (Exception e) {
             return UnifiedQueryResult.error(question, "Error procesando la pregunta: " + e.getMessage());
-        }
+        }*/
+        throw new NotImplementedException("No usar este servicio sino el que emplea cache");
     }
 }

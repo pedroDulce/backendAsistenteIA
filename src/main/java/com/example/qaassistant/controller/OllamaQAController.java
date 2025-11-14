@@ -36,12 +36,6 @@ public class OllamaQAController {
         this.enhancedQAService = enhancedQAService;
     }
     
-    @PostMapping("/old-chat")
-    public ResponseEntity<UnifiedQueryResult> chat(@RequestBody ChatRequest request) {
-        UnifiedQueryResult result = cachedUnifiedQAService.processQuestion(request.getQuestion());
-        return ResponseEntity.ok(result);
-    }
-
     @PostMapping("/ask-enhanced")    //ask-enhanced
     public ResponseEntity<UnifiedQueryResult> askEnhancedQuestion(@RequestBody ChatRequest request) {
         log.info("Procesando consulta mejorada: {}", request.getQuestion());
