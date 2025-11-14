@@ -47,10 +47,5 @@ public class LearningController {
         return learningService.getPopularQueriesByIntent(intent, limit);
     }
 
-    @GetMapping("/learning/queries/intent/{intent}")
-    public LearningService.LearningStatistics getLearningStatistics() {
-        return learningService.getLearningStatistics();
-    }
-
 
 }
