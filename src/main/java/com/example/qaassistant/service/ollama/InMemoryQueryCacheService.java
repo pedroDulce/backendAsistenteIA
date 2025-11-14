@@ -83,7 +83,7 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     @Override
     public List<String> getFrequentQueries(int limit) {
-        if (queryFrequency.entrySet().isEmpty()) {
+        if (queryFrequency.entrySet() != null || queryFrequency.entrySet().isEmpty()) {
             return new ArrayList<>();
         }
         return queryFrequency.entrySet().stream()
@@ -112,14 +112,15 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     @Override
     public Map<String, Integer> getQueryFrequencyStats(int days) {
-        // Implementación básica - ajusta según tus necesidades
         Map<String, Integer> frequencyStats = new HashMap<>();
         long cutoffTime = System.currentTimeMillis() - (days * 24 * 60 * 60 * 1000L);
 
-        // Ejemplo: contar frecuencia de queries en el período especificado
-        // Necesitarías almacenar más datos históricos para una implementación real
+        // Filtrar por timestamp y contar frecuencia
         cache.entrySet().stream()
-                .filter(entry -> entry.getValue().getTimestamp() > cutoffTime)
+                .filter(entry -> {
+                    CachedResult cachedResult = entry.getValue();
+                    return cachedResult != null && cachedResult.getTimestamp() > cutoffTime;
+                })
                 .forEach(entry -> {
                     String query = entry.getKey();
                     frequencyStats.put(query, frequencyStats.getOrDefault(query, 0) + 1);
@@ -172,13 +173,18 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
         private final UnifiedQueryResult result;
         private final long timestamp;
 
-        public CachedResult(UnifiedQueryResult result, long timestamp) {
+        public CachedResult(UnifiedQueryResult result, long timeIn) {
             this.result = result;
-            this.timestamp = timestamp;
+            this.timestamp = timeIn;
         }
 
-        public UnifiedQueryResult getResult() { return result; }
-        public long getTimestamp() { return timestamp; }
+        public UnifiedQueryResult getResult() {
+            return result;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
     }
 
 }
