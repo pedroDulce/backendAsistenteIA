@@ -33,9 +33,9 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
     private static final long CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 horas
 
     // Métricas para monitoreo
-    private int cacheHits = 0;
-    private int cacheMisses = 0;
-    private int cacheStores = 0;
+    private long cacheHits = 0;
+    private long cacheMisses = 0;
+    private long cacheStores = 0;
 
     @Override
     public Optional<UnifiedQueryResult> getCachedResult(String question) {
@@ -83,7 +83,7 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
 
     @Override
     public List<String> getFrequentQueries(int limit) {
-        if (queryFrequency.entrySet() != null || queryFrequency.entrySet().isEmpty()) {
+        if (queryFrequency.entrySet() == null || queryFrequency.entrySet().isEmpty()) {
             return new ArrayList<>();
         }
         return queryFrequency.entrySet().stream()
@@ -144,6 +144,9 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
     }
 
     private long calculateCacheSize() {
+        if (cache.values() == null || cache.values().isEmpty()) {
+            return (long) 0;
+        }
         // Estimación simple del tamaño en memoria
         return cache.values().stream()
                 .mapToLong(cached ->
@@ -152,6 +155,9 @@ public class InMemoryQueryCacheService implements IQueryCacheService {
     }
 
     private long findOldestEntryAge() {
+        if (cache.values() == null || cache.values().isEmpty()) {
+            return (long) 0;
+        }
         return cache.values().stream()
                 .mapToLong(timestamp -> (System.currentTimeMillis() - timestamp.getTimestamp()) / 1000)
                 .max()

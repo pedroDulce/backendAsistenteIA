@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/qa-assistant")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class OllamaQAController {
 
     private static final Logger log = LoggerFactory.getLogger(OllamaQAController.class);

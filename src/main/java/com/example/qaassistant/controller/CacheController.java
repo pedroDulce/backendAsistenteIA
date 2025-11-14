@@ -27,7 +27,7 @@ public class CacheController {
         return Map.of(
                 "message", "Contenido detallado de cache no expuesto por seguridad",
                 "cacheStats", stats,
-                "suggestion", "Usa /api/debug/cache/stats para ver estadísticas"
+                "suggestion", "Usa /api/cache/stats para ver estadísticas"
         );
     }
 
@@ -40,7 +40,7 @@ public class CacheController {
         );
     }
 
-    @GetMapping("/frequent-queries/{limit}")
+    @GetMapping("/frequency/{limit}")
     public Map<String, Object> getFrequentQueries(@PathVariable("limit") int limit) {
         return Map.of(
                 "frequentQueries", cacheService.getFrequentQueries(limit),
