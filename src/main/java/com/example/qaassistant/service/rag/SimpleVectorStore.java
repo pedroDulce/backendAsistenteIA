@@ -47,21 +47,6 @@ public class SimpleVectorStore {
         log.debug("✅ SimpleVectorStore: Documento almacenado: {} - {}", doc.getId(), doc.getTitle());
     }
 
-    public List<KnowledgeDocument> semanticSearch(String query, int topK) {
-        List<KnowledgeDocument> allDocs = new ArrayList<>(documents.values());
-
-        List<EmbeddingService.SimilarityResult> results =
-                embeddingService.findSimilarDocuments(query, allDocs, topK);
-
-        return results.stream()
-                .map(result -> {
-                    // Añadir score de similitud al documento
-                    result.document.getMetadata().put("similarityScore", result.similarity);
-                    return result.document;
-                })
-                .toList();
-    }
-
     public List<KnowledgeDocument> similaritySearch(String query) {
         return similaritySearch(query, 5);
     }
@@ -122,8 +107,20 @@ public class SimpleVectorStore {
         return documents.size();
     }
 
+    public void indexDocuments(List<KnowledgeDocument> uniqueDocs) {
+        log.info("🔄 Indexando con " + uniqueDocs.size() + " documentos ...");
+        this.addDocs(uniqueDocs);
+    }
+    public List<KnowledgeDocument> searchDocuments(String question) {
+
+        log.info("🔍 Buscando: " + question);
+
+        return this.similaritySearch(question);
+    }
+
+
     /*** mecanismo de limpieza **/
-    public void deduplicateVectorDB() {
+    private void deduplicateVectorDB() {
         try {
             log.info("... Iniciando limpieza de base de datos vectorial...");
 
@@ -188,17 +185,6 @@ public class SimpleVectorStore {
         } catch (Exception e) {
             log.error("❌ Error durante la limpieza: ", e);
         }
-    }
-
-    public void indexDocuments(List<KnowledgeDocument> uniqueDocs) {
-        log.info("🔄 Indexando con " + uniqueDocs.size() + " documentos ...");
-        this.addDocs(uniqueDocs);
-    }
-    public List<KnowledgeDocument> searchDocuments(String question) {
-
-        log.info("🔍 Buscando: " + question);
-
-        return this.similaritySearch(question);
     }
 
     private String normalizeContent(String content) {
