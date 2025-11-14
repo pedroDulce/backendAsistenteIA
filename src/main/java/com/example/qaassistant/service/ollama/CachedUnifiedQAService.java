@@ -2,10 +2,7 @@ package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.controller.transfer.RagResponse;
 import com.example.qaassistant.model.ollama.QueryResult;
-import com.example.qaassistant.service.LLMQuestionClassifier;
-import com.example.qaassistant.service.QAService;
-import com.example.qaassistant.service.QuestionIntent;
-import com.example.qaassistant.service.UnifiedQueryResult;
+import com.example.qaassistant.service.*;
 import com.example.qaassistant.service.rag.RagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +17,12 @@ public class CachedUnifiedQAService {
 
     private static final Logger log = LoggerFactory.getLogger(CachedUnifiedQAService.class);
     private final RagService ragService;
-    private final LLMQuestionClassifier intentClassifier;
+    //private final LLMQuestionClassifier intentClassifier;
+    private final IntentClassifier intentClassifier;
     private final QAService qaService;
     private final InMemoryQueryCacheService cacheService;
 
-    public CachedUnifiedQAService(QAService qaService, RagService ragService, LLMQuestionClassifier intentClassifier,
+    public CachedUnifiedQAService(QAService qaService, RagService ragService, IntentClassifier intentClassifier,
                                   InMemoryQueryCacheService cacheService) {
         this.ragService = ragService;
         this.qaService = qaService;
