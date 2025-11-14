@@ -1,7 +1,12 @@
 package com.example.qaassistant.service.ollama;
 
-import com.example.qaassistant.service.UnifiedQAService;
+import com.example.qaassistant.controller.transfer.RagResponse;
+import com.example.qaassistant.model.ollama.QueryResult;
+import com.example.qaassistant.service.LLMQuestionClassifier;
+import com.example.qaassistant.service.QAService;
+import com.example.qaassistant.service.QuestionIntent;
 import com.example.qaassistant.service.UnifiedQueryResult;
+import com.example.qaassistant.service.rag.RagService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +16,16 @@ import java.util.Optional;
 @Primary
 public class CachedUnifiedQAService {
 
-    private final UnifiedQAService unifiedQAService;
+    private final RagService ragService;
+    private final LLMQuestionClassifier intentClassifier;
+    private final QAService qaService;
     private final InMemoryQueryCacheService cacheService;
 
-    public CachedUnifiedQAService(UnifiedQAService unifiedQAService,
+    public CachedUnifiedQAService(QAService qaService, RagService ragService, LLMQuestionClassifier intentClassifier,
                                   InMemoryQueryCacheService cacheService) {
-        this.unifiedQAService = unifiedQAService;
+        this.ragService = ragService;
+        this.qaService = qaService;
+        this.intentClassifier = intentClassifier;
         this.cacheService = cacheService;
     }
 
@@ -28,7 +37,7 @@ public class CachedUnifiedQAService {
         }
 
         // Procesar normalmente
-        UnifiedQueryResult result = unifiedQAService.processQuestion(question);
+        UnifiedQueryResult result = processInnerQuestion(question);
 
         // Cachear si fue exitoso
         if (result.isSuccess()) {
@@ -38,4 +47,29 @@ public class CachedUnifiedQAService {
 
         return result;
     }
+
+    public UnifiedQueryResult processInnerQuestion(String question) {
+        try {
+            // 1. Clasificar la intención
+            QuestionIntent intent = intentClassifier.classify(question);
+
+            System.out.println("=== DEBUG INTENT CLASSIFICATION ===");
+            System.out.println("Question: " + question);
+            System.out.println("Intent: " + intent);
+            System.out.println("===================================");
+
+            // 2. Procesar según la intención
+            if (intent == QuestionIntent.SQL) {
+                QueryResult sqlResult = qaService.processNaturalLanguageQuery(question);
+                return UnifiedQueryResult.fromSQLResult(sqlResult, intent);
+            } else {
+                RagResponse ragResult = ragService.processQuestion(question);
+                return UnifiedQueryResult.fromRAGResult(ragResult, intent);
+            }
+
+        } catch (Exception e) {
+            return UnifiedQueryResult.error(question, "Error procesando la pregunta: " + e.getMessage());
+        }
+    }
+
 }

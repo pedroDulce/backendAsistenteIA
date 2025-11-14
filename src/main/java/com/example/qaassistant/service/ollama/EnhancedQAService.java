@@ -1,7 +1,6 @@
 package com.example.qaassistant.service.ollama;
 
 import com.example.qaassistant.model.ollama.ComplexityLevel;
-import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.UnifiedQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

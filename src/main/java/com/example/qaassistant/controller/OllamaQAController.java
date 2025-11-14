@@ -5,7 +5,6 @@ import com.example.qaassistant.model.aplicacion.Aplicacion;
 import com.example.qaassistant.model.aplicacion.EstadoAplicacion;
 import com.example.qaassistant.model.dto.RankingDTO;
 import com.example.qaassistant.repository.AplicacionRepository;
-import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.UnifiedQueryResult;
 import com.example.qaassistant.service.ollama.CachedUnifiedQAService;
 import com.example.qaassistant.service.ollama.EnhancedQAService;
