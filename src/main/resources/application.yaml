@@ -1,6 +1,17 @@
 spring:
   server: 8080
 
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
   datasource:
     url: jdbc:h2:mem:qa_catalog;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
@@ -31,3 +42,11 @@ ollama:
   default-model: llama3.2:3b
 #openai:
 #  api-key: ${OPENAI_API_KEY:demo-key}
+
+app:
+  cache:
+    enabled: true
+    ttl: 24h
+  learning:
+    enabled: true
+    min-successful-queries: 10

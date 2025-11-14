@@ -5,6 +5,9 @@ import com.example.qaassistant.model.EstadoAplicacion;
 import com.example.qaassistant.repository.AplicacionRepository;
 import com.example.qaassistant.service.UnifiedQAService;
 import com.example.qaassistant.service.UnifiedQueryResult;
+import com.example.qaassistant.service.ollama.EnhancedQAService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +20,31 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/qa-assistant")
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
 public class OllamaQAController {
+
+    private static final Logger log = LoggerFactory.getLogger(OllamaQAController.class);
     private final AplicacionRepository aplicacionRepository;
     private final UnifiedQAService unifiedQAService;
+    private final EnhancedQAService enhancedQAService;
 
-    public OllamaQAController(UnifiedQAService unifiedQAService, AplicacionRepository aplicacionRepository) {
+    public OllamaQAController(UnifiedQAService unifiedQAService, AplicacionRepository aplicacionRepository,
+                              EnhancedQAService enhancedQAService) {
         this.unifiedQAService = unifiedQAService;
         this.aplicacionRepository = aplicacionRepository;
+        this.enhancedQAService = enhancedQAService;
     }
     
     @PostMapping("/chat")
     public ResponseEntity<UnifiedQueryResult> chat(@RequestBody ChatRequest request) {
         UnifiedQueryResult result = unifiedQAService.processQuestion(request.getQuestion());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/ask-enhanced")
+    public ResponseEntity<UnifiedQueryResult> askEnhancedQuestion(@RequestBody ChatRequest request) {
+        log.info("Procesando consulta mejorada: {}", request.getQuestion());
+
+        UnifiedQueryResult result = enhancedQAService.processEnhancedQuestion(request.getQuestion());
+
         return ResponseEntity.ok(result);
     }
 

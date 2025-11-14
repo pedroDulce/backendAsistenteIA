@@ -29,6 +29,12 @@ public class SimpleVectorStore {
         System.out.println("✅ VectorStore: Añadidos " + docs.size() + " documentos");
     }
 
+    public void addOne(KnowledgeDocument doc) {
+        documents.add(doc);
+        embeddings.put(doc.getId(), generateEmbedding(doc.getContent()));
+        System.out.println("✅ VectorStore: Añadido documento");
+    }
+
     public List<KnowledgeDocument> similaritySearch(String query) {
         return similaritySearch(query, 5);
     }

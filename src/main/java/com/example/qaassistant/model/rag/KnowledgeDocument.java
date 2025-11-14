@@ -13,6 +13,9 @@ public class KnowledgeDocument {
     private String content;
     private Map<String, Object> metadata;
 
+    public KnowledgeDocument() {
+
+    }
     public KnowledgeDocument(String content) {
         this.id = UUID.randomUUID().toString();
         this.content = content;
