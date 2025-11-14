@@ -12,8 +12,14 @@ import java.util.stream.Collectors;
 public class VectorDBCleaner {
     private static final Logger log = LoggerFactory.getLogger(VectorDBCleaner.class);
 
-    @Autowired
-    private RagService ragService;
+    private final RagService ragService;
+
+    private final SimpleVectorStore simpleVectorStore;
+
+    public VectorDBCleaner(RagService ragService, SimpleVectorStore simpleVectorStore) {
+        this.ragService = ragService;
+        this.simpleVectorStore = simpleVectorStore;
+    }
 
     public void deduplicateVectorDB() {
         try {
@@ -105,12 +111,11 @@ public class VectorDBCleaner {
         // TODO: Implementar la lógica de reindexación según tu vector store
         log.info("🔄 Reindexando con " + uniqueDocs.size() + " documentos únicos...");
 
-        // Ejemplo:
         // 1. Limpiar vector store existente
-        //ragService.clear();
+        simpleVectorStore.deleteAll();
 
         // 2. Añadir documentos únicos
-        //ragService.addDocuments(uniqueDocs);
+        simpleVectorStore.addDocs(uniqueDocs);
     }
 
     private void printDuplicateReport(Map<String, List<KnowledgeDocument>> duplicates) {

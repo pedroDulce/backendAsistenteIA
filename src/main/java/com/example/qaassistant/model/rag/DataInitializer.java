@@ -1,6 +1,7 @@
 package com.example.qaassistant.model.rag;
 
 import com.example.qaassistant.service.rag.EmbeddingService;
+import com.example.qaassistant.service.rag.SimpleVectorStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,11 +15,13 @@ import java.util.Map;
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
-    private final EmbeddingService knowledgeBaseService;
+    private final EmbeddingService embeddingService;
+    private final SimpleVectorStore simpleVectorStore;
 
     @Autowired
-    public DataInitializer(EmbeddingService knowledgeBaseService) {
-        this.knowledgeBaseService = knowledgeBaseService;
+    public DataInitializer(EmbeddingService embeddingService, SimpleVectorStore simpleVectorStore) {
+        this.embeddingService = embeddingService;
+        this.simpleVectorStore = simpleVectorStore;
     }
 
     @Override
@@ -27,11 +30,10 @@ public class DataInitializer implements CommandLineRunner {
 
         List<KnowledgeDocument> documents = crearDocumentosCompletos();
 
-        // Si usas VectorStore de Spring AI
-        // vectorStore.add(documents);
-
         // Si usas tu propio servicio
-        knowledgeBaseService.indexDocuments(documents);
+        embeddingService.indexDocuments(documents);
+
+        simpleVectorStore.addDocs(documents);
 
         log.info("✅ Base de conocimiento inicializada con " + documents.size() + " documentos");
     }

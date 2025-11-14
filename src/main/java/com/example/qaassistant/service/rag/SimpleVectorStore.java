@@ -3,15 +3,22 @@ package com.example.qaassistant.service.rag;
 import com.example.qaassistant.model.rag.KnowledgeDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
 public class SimpleVectorStore {
     private static final Logger log = LoggerFactory.getLogger(SimpleVectorStore.class);
-    private final List<KnowledgeDocument> documents = new ArrayList<>();
+    private final Map<String, KnowledgeDocument> documents = new ConcurrentHashMap<>();
     private final Map<String, float[]> embeddings = new HashMap<>();
+    private final EmbeddingService embeddingService;
+
+    public SimpleVectorStore(EmbeddingService embeddingService) {
+        this.embeddingService = embeddingService;
+    }
 
     // Simulación de embeddings (en producción usarías un modelo real)
     private float[] generateEmbedding(String text) {
@@ -24,18 +31,36 @@ public class SimpleVectorStore {
         return embedding;
     }
 
-    public void add(List<KnowledgeDocument> docs) {
+    public void addDocs(List<KnowledgeDocument> docs) {
         for (KnowledgeDocument doc : docs) {
-            documents.add(doc);
-            embeddings.put(doc.getId(), generateEmbedding(doc.getContent()));
+            addDocument(doc);
         }
         log.info("✅ VectorStore: Añadidos " + docs.size() + " documentos");
     }
 
-    public void addOne(KnowledgeDocument doc) {
-        documents.add(doc);
-        embeddings.put(doc.getId(), generateEmbedding(doc.getContent()));
-        log.info("✅ VectorStore: Añadido documento");
+    public void addDocument(KnowledgeDocument doc) {
+        // Generar embedding si no existe
+        if (doc.getEmbedding() == null || doc.getEmbedding().isEmpty()) {
+            List<Float> embedding = embeddingService.generateEmbedding(doc.getContent());
+            doc.setEmbedding(embedding);
+        }
+        documents.put(doc.getId(), doc);
+        log.debug("✅ VectorStore: Documento almacenado: {} - {}", doc.getId(), doc.getTitle());
+    }
+
+    public List<KnowledgeDocument> semanticSearch(String query, int topK) {
+        List<KnowledgeDocument> allDocs = new ArrayList<>(documents.values());
+
+        List<EmbeddingService.SimilarityResult> results =
+                embeddingService.findSimilarDocuments(query, allDocs, topK);
+
+        return results.stream()
+                .map(result -> {
+                    // Añadir score de similitud al documento
+                    result.document.getMetadata().put("similarityScore", result.similarity);
+                    return result.document;
+                })
+                .toList();
     }
 
     public List<KnowledgeDocument> similaritySearch(String query) {
@@ -51,7 +76,7 @@ public class SimpleVectorStore {
 
         // Calcular similitudes
         List<SearchResult> results = new ArrayList<>();
-        for (KnowledgeDocument doc : documents) {
+        for (KnowledgeDocument doc : documents.values()) {
             float[] docEmbedding = embeddings.get(doc.getId());
             float similarity = cosineSimilarity(queryEmbedding, docEmbedding);
             results.add(new SearchResult(doc, similarity));
