@@ -1,44 +1,56 @@
 package com.example.qaassistant.controller;
 
-// LearningController.java
 import com.example.qaassistant.model.ollama.SuccessfulQuery;
+import com.example.qaassistant.repository.ollama.SuccessfulQueryRepository;
 import com.example.qaassistant.service.ollama.LearningService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/learning")
+@RequestMapping("/api/debug")
 public class LearningController {
 
-    private static final Logger log = LoggerFactory.getLogger(LearningController.class);
-
     private final LearningService learningService;
+    private final SuccessfulQueryRepository queryRepository;
 
-    public LearningController(LearningService learningService) {
+    public LearningController(LearningService learningService,
+                              SuccessfulQueryRepository queryRepository) {
         this.learningService = learningService;
+        this.queryRepository = queryRepository;
     }
 
-    @GetMapping("/popular-queries")
+    @GetMapping("/learning/stats")
+    public Map<String, Object> getLearningStats() {
+        return learningService.getLearningStats();
+    }
+
+    @GetMapping("/learning/queries/all")
+    public List<SuccessfulQuery> getAllLearnedQueries() {
+        return queryRepository.findAll();
+    }
+
+    @GetMapping("/learning/queries/popular")
     public List<SuccessfulQuery> getPopularQueries(@RequestParam(defaultValue = "10") int limit) {
         return learningService.getPopularQueries(limit);
     }
 
-    @GetMapping("/recent-queries")
+    @GetMapping("/learning/queries/recent")
     public List<SuccessfulQuery> getRecentQueries(@RequestParam(defaultValue = "10") int limit) {
         return learningService.getRecentSuccessfulQueries(limit);
     }
 
-    @GetMapping("/statistics")
-    public LearningService.LearningStatistics getStatistics() {
+    @GetMapping("/learning/queries/intent/{intent}")
+    public List<SuccessfulQuery> getQueriesByIntent(@PathVariable String intent,
+                                                    @RequestParam(defaultValue = "10") int limit) {
+        return learningService.getPopularQueriesByIntent(intent, limit);
+    }
+
+    @GetMapping("/learning/queries/intent/{intent}")
+    public LearningService.LearningStatistics getLearningStatistics() {
         return learningService.getLearningStatistics();
     }
 
-    @GetMapping("/intent/{intent}/popular")
-    public List<SuccessfulQuery> getPopularByIntent(@PathVariable String intent,
-                                                    @RequestParam(defaultValue = "5") int limit) {
-        return learningService.getPopularQueriesByIntent(intent, limit);
-    }
+
 }

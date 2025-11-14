@@ -11,11 +11,12 @@ import java.util.Optional;
 @Primary
 public class CachedUnifiedQAService {
 
+
     private final UnifiedQAService unifiedQAService;
-    private final QueryCacheService cacheService;
+    private final InMemoryQueryCacheService cacheService;
 
     public CachedUnifiedQAService(UnifiedQAService unifiedQAService,
-                                  QueryCacheService cacheService) {
+                                  InMemoryQueryCacheService cacheService) {
         this.unifiedQAService = unifiedQAService;
         this.cacheService = cacheService;
     }

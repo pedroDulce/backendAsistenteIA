@@ -27,6 +27,10 @@ public class LearningService {
     private final SuccessfulQueryRepository queryRepository;
     private final SimpleVectorStore vectorStoreService;
 
+    private int totalLearnedQueries = 0;
+    private int knowledgeBaseAdditions = 0;
+
+
     public LearningService(SuccessfulQueryRepository queryRepository,
                            SimpleVectorStore vectorStoreService) {
         this.queryRepository = queryRepository;
@@ -45,10 +49,15 @@ public class LearningService {
             if (existing.isPresent()) {
                 // Incrementar contador de uso
                 SuccessfulQuery query = existing.get();
+                int oldCount = query.getUsageCount();
                 query.setUsageCount(query.getUsageCount() + 1);
                 query.setTimestamp(LocalDateTime.now());
                 queryRepository.save(query);
                 log.info("Consulta existente actualizada: {}", question);
+                log.info("🔄 CONSULTA ACTUALIZADA - Uso incrementado");
+                log.info("   Pregunta: \"{}\"", truncateText(question, 60));
+                log.info("   Uso anterior: {}, Uso actual: {}", oldCount, oldCount + 1);
+                log.info("   Intent: {}, Resultados: {}", intent, resultCount);
             } else {
                 // Guardar nueva consulta exitosa
                 SuccessfulQuery newQuery = new SuccessfulQuery();
@@ -60,6 +69,12 @@ public class LearningService {
                 newQuery.setTimestamp(LocalDateTime.now());
                 newQuery.setUsageCount(1);
                 queryRepository.save(newQuery);
+                log.info("🎓 NUEVA CONSULTA APRENDIDA");
+                log.info("   Pregunta: \"{}\"", truncateText(question, 60));
+                log.info("   SQL Generado: {}", generatedSQL);
+                log.info("   Intent: {}, Resultados: {}", intent, resultCount);
+                log.info("   Tiempo ejecución: {} ms", executionTime);
+                log.info("   Total consultas aprendidas: {}", totalLearnedQueries);
                 log.info("Nueva consulta exitosa guardada: {}", question);
             }
 
@@ -69,6 +84,34 @@ public class LearningService {
         } catch (Exception e) {
             log.error("Error registrando consulta exitosa", e);
         }
+    }
+
+    // En LearningService.java
+    public Map<String, Object> getLearningStats() {
+        List<SuccessfulQuery> allQueries = queryRepository.findAll();
+        long totalQueries = allQueries.size();
+        long totalUsage = allQueries.stream().mapToInt(SuccessfulQuery::getUsageCount).sum();
+
+        // Calcular la distribución de intents
+        Map<String, Long> intentDistribution = allQueries.stream()
+                .collect(Collectors.groupingBy(
+                        SuccessfulQuery::getIntent,
+                        Collectors.summingLong(SuccessfulQuery::getUsageCount)
+                ));
+
+        return Map.of(
+                "totalQueriesLearned", totalQueries,
+                "totalUsageCount", totalUsage,
+                "knowledgeBaseAdditions", knowledgeBaseAdditions, // Asegúrate de tener este campo
+                "averageUsagePerQuery", totalQueries > 0 ? (double) totalUsage / totalQueries : 0,
+                "intentDistribution", intentDistribution,
+                "recentQueries", getRecentSuccessfulQueries(5), // Usamos el método existente
+                "popularQueries", getPopularQueries(5) // Usamos el método existente
+        );
+    }
+
+    private String truncateText(String text, int maxLength) {
+        return text.length() > maxLength ? text.substring(0, maxLength) + "..." : text;
     }
 
     private void addToKnowledgeBase(String question, String sql, String intent) {
@@ -81,7 +124,7 @@ public class LearningService {
                 
                 Este es un ejemplo validado de cómo traducir preguntas naturales a SQL.
                 """.formatted(question, sql, intent);
-
+            knowledgeBaseAdditions++;
             // Aquí deberías integrar con tu VectorStoreService
             log.info("Conocimiento preparado para RAG: {}", knowledgeContent.substring(0, Math.min(100, knowledgeContent.length())));
 
