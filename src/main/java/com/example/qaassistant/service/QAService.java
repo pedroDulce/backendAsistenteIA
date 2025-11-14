@@ -81,6 +81,7 @@ public class QAService {
                     formattedResults, explanation, true);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return new QueryResult(userQuestion, null, null,
                     "Error procesando la consulta: " + e.getMessage(),
                     "Intenta reformular tu pregunta.", false);

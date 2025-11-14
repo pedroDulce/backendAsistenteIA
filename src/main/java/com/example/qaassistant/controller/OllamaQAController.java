@@ -1,5 +1,6 @@
 package com.example.qaassistant.controller;
 
+import com.example.qaassistant.controller.transfer.ChatRequest;
 import com.example.qaassistant.model.aplicacion.Aplicacion;
 import com.example.qaassistant.model.aplicacion.EstadoAplicacion;
 import com.example.qaassistant.model.dto.RankingDTO;

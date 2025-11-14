@@ -1,6 +1,6 @@
 package com.example.qaassistant.configuration;
 
-import com.example.qaassistant.controller.ErrorResponse;
+import com.example.qaassistant.controller.transfer.ErrorResponse;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

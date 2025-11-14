@@ -1,6 +1,6 @@
 package com.example.qaassistant.service;
 
-import com.example.qaassistant.controller.RagResponse;
+import com.example.qaassistant.controller.transfer.RagResponse;
 import com.example.qaassistant.model.ollama.QueryResult;
 import com.example.qaassistant.model.rag.KnowledgeDocument;
 import com.example.qaassistant.service.rag.RagService;

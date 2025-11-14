@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/debug")
+@RequestMapping("/api/learning")
 public class LearningController {
 
     private final LearningService learningService;
@@ -21,27 +21,27 @@ public class LearningController {
         this.queryRepository = queryRepository;
     }
 
-    @GetMapping("/learning/stats")
+    @GetMapping("/stats")
     public Map<String, Object> getLearningStats() {
         return learningService.getLearningStats();
     }
 
-    @GetMapping("/learning/queries/all")
+    @GetMapping("/queries/all")
     public List<SuccessfulQuery> getAllLearnedQueries() {
         return queryRepository.findAll();
     }
 
-    @GetMapping("/learning/queries/popular")
+    @GetMapping("/queries/popular")
     public List<SuccessfulQuery> getPopularQueries(@RequestParam(defaultValue = "10") int limit) {
         return learningService.getPopularQueries(limit);
     }
 
-    @GetMapping("/learning/queries/recent")
+    @GetMapping("/queries/recent")
     public List<SuccessfulQuery> getRecentQueries(@RequestParam(defaultValue = "10") int limit) {
         return learningService.getRecentSuccessfulQueries(limit);
     }
 
-    @GetMapping("/learning/queries/intent/{intent}")
+    @GetMapping("/queries/intent/{intent}")
     public List<SuccessfulQuery> getQueriesByIntent(@PathVariable String intent,
                                                     @RequestParam(defaultValue = "10") int limit) {
         return learningService.getPopularQueriesByIntent(intent, limit);

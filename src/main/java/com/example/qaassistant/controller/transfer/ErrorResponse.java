@@ -1,4 +1,4 @@
-package com.example.qaassistant.controller;
+package com.example.qaassistant.controller.transfer;
 
 import lombok.Data;
 

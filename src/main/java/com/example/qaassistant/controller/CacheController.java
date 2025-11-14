@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/debug")
+@RequestMapping("/api/cache")
 public class CacheController {
 
     private final InMemoryQueryCacheService cacheService;
@@ -15,12 +15,12 @@ public class CacheController {
         this.cacheService = cacheService;
     }
 
-    @GetMapping("/cache/stats")
+    @GetMapping("/stats")
     public Map<String, Object> getCacheStats() {
         return cacheService.getCacheStats();
     }
 
-    @GetMapping("/cache/contents")
+    @GetMapping("/contents")
     public Map<String, Object> getCacheContents() {
         Map<String, Object> stats = cacheService.getCacheStats();
         return Map.of(
@@ -30,7 +30,7 @@ public class CacheController {
         );
     }
 
-    @PostMapping("/cache/clear")
+    @PostMapping("/clear")
     public Map<String, String> clearCache() {
         cacheService.clearCache();
         return Map.of(
@@ -39,7 +39,7 @@ public class CacheController {
         );
     }
 
-    @GetMapping("/cache/frequent-queries")
+    @GetMapping("/frequent-queries")
     public Map<String, Object> getFrequentQueries(@RequestParam(defaultValue = "10") int limit) {
         return Map.of(
                 "frequentQueries", cacheService.getFrequentQueries(limit),
