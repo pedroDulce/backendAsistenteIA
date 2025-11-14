@@ -190,6 +190,10 @@ public class SimpleVectorStore {
         }
     }
 
+    public void indexDocuments(List<KnowledgeDocument> uniqueDocs) {
+        log.info("🔄 Indexando con " + uniqueDocs.size() + " documentos ...");
+        this.addDocs(uniqueDocs);
+    }
     public List<KnowledgeDocument> searchDocuments(String question) {
 
         log.info("🔍 Buscando: " + question);

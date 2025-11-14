@@ -28,7 +28,8 @@ public class KnowledgeDocument {
         this.title = title;
     }
 
-    public KnowledgeDocument(String s, Map<String, Object> tipo) {
+    public KnowledgeDocument(String content, Map<String, Object> tipo) {
+        this.content = content;
         this.metadata = tipo;
     }
 
