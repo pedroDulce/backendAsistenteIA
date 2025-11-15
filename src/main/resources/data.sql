@@ -25,19 +25,19 @@ INSERT INTO elemento_promocionable (nombre, descripcion, tipo, aplicacion_id) VA
 ('EP 1 de MACA', 'EP 1 de MACA', 'API', 3);
 
 -- Insertar itinerarios QA (SIN IDs)
-INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
 ('QA HARA1', '2024-01-01', '2024-12-31', 'ACTIVO', 1);
 
-INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
 ('QA HARA2', '2024-01-01', '2024-12-31', 'ACTIVO', 2);
 
-INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
 ('QA MARE1', '2024-01-01', '2024-12-31', 'ACTIVO', 3);
 
-INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
 ('QA MARE2', '2024-01-01', '2024-12-31', 'ACTIVO', 4);
 
-INSERT INTO itinerario_qa (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
+INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promocionable_id) VALUES
 ('QA MACA1', '2024-01-01', '2024-12-31', 'ACTIVO', 5);
 
 -- Insertar actividades QA (SIN IDs)

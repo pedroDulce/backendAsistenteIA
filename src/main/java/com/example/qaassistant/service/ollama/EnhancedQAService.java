@@ -187,7 +187,7 @@ public class EnhancedQAService {
         } else if (lowerQuestion.contains("cuántas aplicaciones")) {
             return "SELECT COUNT(*) as total FROM Aplicacion";
         } else if (lowerQuestion.contains("itinerarios activos")) {
-            return "SELECT id, nombre, elemento_promocionable_id, estado FROM Itinerario_QA WHERE estado = 'ACTIVO'";
+            return "SELECT id, nombre, elemento_promocionable_id, estado FROM Itinerario WHERE estado = 'ACTIVO'";
         } else if (lowerQuestion.contains("elementos promocionables")) {
             return "SELECT ep.id, ep.nombre, ep.tipo, app.nombre as aplicacion " +
                     "FROM Elemento_Promocionable ep " +
@@ -217,7 +217,7 @@ public class EnhancedQAService {
 
         return "SELECT a.nombre, a.tipo, a.porcentaje_completado, a.estado, i.nombre as itinerario " +
                 "FROM Actividad_QA a " +
-                "JOIN Itinerario_QA i ON a.itinerario_id = i.id " +
+                "JOIN Itinerario i ON a.itinerario_id = i.id " +
                 "WHERE LOWER(i.nombre) LIKE LOWER('%" + itinerarioName + "%') " +
                 "ORDER BY a.porcentaje_completado DESC";
     }
@@ -230,7 +230,7 @@ public class EnhancedQAService {
                         "FROM Actividad_QA a " +
                         "JOIN Elemento_Promocionable ep ON app.id = ep.aplicacion_id " +
                         "JOIN Aplicacion app ON app.id = ep.aplicacion_id " +
-                        "JOIN Itinerario_QA i ON a.itinerario_id = i.id " +
+                        "JOIN Itinerario i ON a.itinerario_id = i.id " +
                         "WHERE ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
                         "ORDER BY a.porcentaje_completado DESC";
     }
@@ -247,7 +247,7 @@ public class EnhancedQAService {
                 "    COUNT(CASE WHEN a.estado = 'COMPLETADO' THEN 1 END) as actividades_completadas " +
                 "FROM Aplicacion app " +
                 "LEFT JOIN Elemento_Promocionable ep ON app.id = ep.aplicacion_id " +
-                "LEFT JOIN Itinerario_QA i ON ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
+                "LEFT JOIN Itinerario i ON ep.id = i.elemento_promocionable_id AND i.estado = 'ACTIVO' " +
                 "LEFT JOIN Actividad_QA a ON i.id = a.itinerario_id " +
                 "GROUP BY app.id, app.nombre " +
                 "HAVING COUNT(a.id) > 0 " +
