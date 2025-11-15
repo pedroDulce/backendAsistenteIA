@@ -8,15 +8,15 @@ import java.util.Set;
 public class IntentClassifier {
 
     private final Set<String> CONCEPTUAL_KEYWORDS = Set.of(
-            "explicar", "qué es", "cómo funciona", "describe", "definir",
+            "explica", "qué es", "cómo funciona", "describe", "definir",
             "proceso", "método", "en qué consiste", "características",
             "ventajas", "desventajas", "beneficios", "cómo se", "pasos para"
     );
 
     private final Set<String> SQL_KEYWORDS = Set.of(
-            "listar", "mostrar", "cuántos", "cuántas", "contar", "total",
+            "lista", "muestrame", "muéstrame", "mostrar", "cuántos", "cuántas", "contar", "total",
             "ranking", "top", "promedio", "suma", "estadísticas", "registros",
-            "datos de", "consultar", "buscar en", "filtrar"
+            "datos de", "consulta", "busca en ", "buscar en", "filtrar"
     );
 
     public QuestionIntent classify(String question) {

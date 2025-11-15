@@ -80,9 +80,9 @@ public class SimpleVectorStore {
         float normB = 0;
 
         for (int i = 0; i < a.length; i++) {
-            dotProduct += a[i] * b[i];
+            dotProduct += a[i] * (b == null ? 1 : b[i]);
             normA += a[i] * a[i];
-            normB += b[i] * b[i];
+            normB += (b == null ? 1 : b[i]) * (b == null ? 1 : b[i]);
         }
 
         return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
