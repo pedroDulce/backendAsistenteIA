@@ -116,7 +116,7 @@ public class DatabaseSchemaProvider {
             aplicacion_id BIGINT FOREIGN KEY REFERENCES aplicacion(id)
         )
         
-        itinerario_qa (
+        itinerario (
             id BIGINT PRIMARY KEY,
             nombre VARCHAR(255),
             fecha_inicio TIMESTAMP,
@@ -133,17 +133,17 @@ public class DatabaseSchemaProvider {
             porcentaje_completado INTEGER,
             fecha_estimada TIMESTAMP,
             estado VARCHAR(50),
-            itinerario_id BIGINT FOREIGN KEY REFERENCES itinerario_qa(id)
+            itinerario_id BIGINT FOREIGN KEY REFERENCES itinerario(id)
         )
         
         RELACIONES:
         - aplicacion 1:N elemento_promocionable
-        - elemento_promocionable 1:N itinerario_qa
-        - itinerario_qa 1:N actividad_qa
+        - elemento_promocionable 1:N itinerario
+        - itinerario 1:N actividad_qa
         
         ESTADOS VÁLIDOS:
         - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'BLOQUEADA', 'CANCELADA']
-        - itinerario_qa.estado: ['PLANIFICADO', 'ACTIVO', 'COMPLETADO', 'CANCELADO']
+        - itinerario.estado: ['PLANIFICADO', 'ACTIVO', 'COMPLETADO', 'CANCELADO']
         - aplicacion.estado: ['ACTIVA', 'EN_DESARROLLO', 'INACTIVA']
         """;
 
