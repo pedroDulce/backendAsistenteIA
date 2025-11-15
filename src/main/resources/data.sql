@@ -42,7 +42,7 @@ INSERT INTO itinerario (nombre, fecha_inicio, fecha_fin, estado, elemento_promoc
 
 -- Insertar actividades QA (SIN IDs)
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
-('Pruebas Unitarias', 'Tests unitarios del login', 'PRUEBA_UNITARIA', 85.0, 'COMPLETADA', 1);
+('Pruebas Unitarias', 'Tests unitarios del login', 'PRUEBA_UNITARIA', 85.0, 'COMPLETADO', 1);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
 ('Pruebas Integración', 'Tests de integración', 'PRUEBA_INTEGRACION', 70.0, 'EN_PROGRESO', 1);
@@ -51,16 +51,16 @@ INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, esta
 ('Pruebas E2E', 'Tests end-to-end', 'E2E', 45.0, 'PENDIENTE', 1);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
-('Pruebas Security', 'Tests de seguridad', 'SEGURIDAD', 90.0, 'COMPLETADA', 2);
+('Pruebas Security', 'Tests de seguridad', 'SEGURIDAD', 90.0, 'COMPLETADO', 2);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
 ('Pruebas Performance', 'Tests de rendimiento', 'RENDIMIENTO', 60.0, 'EN_PROGRESO', 2);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
-('Pruebas API', 'Tests de endpoints', 'API', 95.0, 'COMPLETADA', 3);
+('Pruebas API', 'Tests de endpoints', 'API', 95.0, 'COMPLETADO', 3);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
-('Pruebas API', 'Tests de endpoints', 'API', 65.0, 'COMPLETADA', 4);
+('Pruebas API', 'Tests de endpoints', 'API', 65.0, 'COMPLETADO', 4);
 
 INSERT INTO actividad_qa (nombre, descripcion, tipo, porcentaje_completado, estado, itinerario_id) VALUES
-('Pruebas API', 'Tests de endpoints', 'API', 75.0, 'COMPLETADA', 5);
+('Pruebas API', 'Tests de endpoints', 'API', 75.0, 'COMPLETADO', 5);

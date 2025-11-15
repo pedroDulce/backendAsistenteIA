@@ -137,14 +137,19 @@ public class DatabaseSchemaProvider {
         )
         
         RELACIONES:
-        - aplicacion 1:N elemento_promocionable
-        - elemento_promocionable 1:N itinerario
         - itinerario 1:N actividad_qa
+        - aplicacion 1:N elemento_promocionable
+        - elemento_promocionable 1:N itinerario              
         
         ESTADOS VÁLIDOS:
-        - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'BLOQUEADA']
+        - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADO', 'BLOQUEADO']
         - itinerario.estado: ['PLANIFICADO', 'ACTIVO', 'COMPLETADO', 'CANCELADO']
         - aplicacion.estado: ['ACTIVA', 'EN_DESARROLLO', 'INACTIVA', 'MANTENIMIENTO']        
+        
+        OTRA INFORMACIÓN:
+        Para conocer la información de un itinerario de una aplicación, hay que consultar los itinerarios de
+        de cada de sus elementos promocionables.
+        
         """;
 
     public String getSchemaContext() {
