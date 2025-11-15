@@ -112,7 +112,8 @@ public class OllamaService {
 
     private String buildSQLPrompt(String schemaContext, String userQuestion) {
         return """
-        Eres un asistente de SQL para H2 Database. 
+        Eres un experto en SQL. Genera una consulta SQL válida basada en el siguiente esquema y pregunta, especializado
+        en H2.
         
         ESQUEMA:
         %s

@@ -1,5 +1,7 @@
 package com.example.qaassistant.service.ollama;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,7 @@ import java.util.Map;
 @Component
 public class DatabaseSchemaProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(DatabaseSchemaProvider.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -81,78 +84,72 @@ public class DatabaseSchemaProvider {
             }
 
         } catch (Exception e) {
+            log.error("Error obteniendo esquema", e);
             schema.append("Error obteniendo esquema: ").append(e.getMessage()).append("\n");
-            // Fallback al esquema estático
-            schema.append(getStaticSchemaContext());
         }
-
         return schema.toString();
     }
 
     /**
      * Contexto estático para cuando no se puede acceder al schema dinámico
      */
-    public String getStaticSchemaContext() {
-        return """
-            ESQUEMA DE BASE DE DATOS H2 - SISTEMA DE ACTIVIDADES QA:
-            
-            TABLA PRINCIPAL: ACTIVIDAD_QA
-            - ID: BIGINT (Primary Key) - Identificador único
-            - APLICACION_NOMBRE: VARCHAR - Nombre de la aplicación (Ej: 'MARE', 'HARA', 'MACA')
-            - ACTIVIDAD_NOMBRE: VARCHAR - Nombre de la actividad de QA (Ej: 'Pruebas API', 'Pruebas Security')
-            - ACTIVIDAD_DESCRIPCION: VARCHAR - Descripción de la actividad
-            - ACTIVIDAD_TIPO: VARCHAR - Tipo de prueba (Ej: 'API', 'SEGURIDAD', 'PRUEBA_UNITARIA', 'PRUEBA_INTEGRACION', 'RENDIMIENTO', 'E2E')
-            - PORCENTAJE_COMPLETADO: INTEGER - Progreso (0-100)
-            - ACTIVIDAD_ESTADO: VARCHAR - Estado (Ej: 'COMPLETADA', 'EN_PROGRESO', 'PENDIENTE')
-            - FECHA_ESTIMADA: DATE - Fecha estimada de finalización
-            - ITINERARIO: VARCHAR - Itinerario de QA (Ej: 'QA MARE1', 'QA HARA1', 'QA HARA2')
-            
-            EJEMPLOS DE DATOS EN ACTIVIDAD_QA:
-            * APLICACION_NOMBRE='MARE', ACTIVIDAD_NOMBRE='Pruebas API', ACTIVIDAD_TIPO='API', PORCENTAJE_COMPLETADO=95, ACTIVIDAD_ESTADO='COMPLETADA'
-            * APLICACION_NOMBRE='HARA', ACTIVIDAD_NOMBRE='Pruebas Security', ACTIVIDAD_TIPO='SEGURIDAD', PORCENTAJE_COMPLETADO=90, ACTIVIDAD_ESTADO='COMPLETADA'
-            
-            RELACIONES CONCEPTUALES:
-            - Cada APLICACION_NOMBRE tiene múltiples ITINERARIOS
-            - Cada ITINERARIO contiene múltiples ACTIVIDADES
-            """;
-    }
-
-    /**
-     * Contexto optimizado para prompts del LLM
-     */
-    public String getOptimizedSchemaForPrompt() {
-        return """
-        BASE DE DATOS: H2 en memoria
-        TABLA: actividad_qa
-
-        COLUMNAS:
-        - id (BIGINT): ID único de la actividad
-        - nombre (VARCHAR): nombre de la actividad QA
-        - descripcion (VARCHAR): descripción de la actividad
-        - tipo (ENUM): tipo de prueba [API, SEGURIDAD, PRUEBA_UNITARIA, PRUEBA_INTEGRACION, RENDIMIENTO, E2E, DOCUMENTACION, REVIEW_CODIGO, PRUEBA_CARGA]
-        - porcentaje_completado (INTEGER): progreso 0-100
-        - estado (ENUM): estado actual [COMPLETADA, EN_PROGRESO, PENDIENTE, BLOQUEADA]
-        - fecha_estimada (DATE): fecha estimada de finalización
-        - itinerario_id (BIGINT): referencia al itinerario
-
-        EJEMPLOS SQL VÁLIDOS:
-        - Listar todo: SELECT * FROM actividad_qa
-        - Filtrar por estado: SELECT * FROM actividad_qa WHERE estado = 'COMPLETADA'
-        - Contar por tipo: SELECT tipo, COUNT(*) FROM actividad_qa GROUP BY tipo
-        - Ordenar por progreso: SELECT * FROM actividad_qa ORDER BY porcentaje_completado DESC
-        - Buscar por nombre: SELECT * FROM actividad_qa WHERE nombre LIKE '%prueba%'
+    private final String databaseSchema = """
+        ESQUEMA DE BASE DE DATOS - CATÁLOGO QA:
+        
+        TABLAS Y COLUMNAS:
+        
+        aplicacion (
+            id BIGINT PRIMARY KEY,
+            nombre VARCHAR(255),
+            descripcion TEXT,
+            equipo_responsable VARCHAR(255),
+            estado VARCHAR(50),
+            fecha_creacion TIMESTAMP
+        )
+        
+        elemento_promocionable (
+            id BIGINT PRIMARY KEY,
+            nombre VARCHAR(255),
+            descripcion TEXT,
+            tipo VARCHAR(100),
+            url_demo VARCHAR(500),
+            aplicacion_id BIGINT FOREIGN KEY REFERENCES aplicacion(id)
+        )
+        
+        itinerario_qa (
+            id BIGINT PRIMARY KEY,
+            nombre VARCHAR(255),
+            fecha_inicio TIMESTAMP,
+            fecha_fin TIMESTAMP,
+            estado VARCHAR(50),
+            elemento_promocionable_id BIGINT FOREIGN KEY REFERENCES elemento_promocionable(id)
+        )
+        
+        actividad_qa (
+            id BIGINT PRIMARY KEY,
+            nombre VARCHAR(255),
+            descripcion TEXT,
+            tipo VARCHAR(100),
+            porcentaje_completado INTEGER,
+            fecha_estimada TIMESTAMP,
+            estado VARCHAR(50),
+            itinerario_id BIGINT FOREIGN KEY REFERENCES itinerario_qa(id)
+        )
+        
+        RELACIONES:
+        - aplicacion 1:N elemento_promocionable
+        - elemento_promocionable 1:N itinerario_qa
+        - itinerario_qa 1:N actividad_qa
+        
+        ESTADOS VÁLIDOS:
+        - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'BLOQUEADA', 'CANCELADA']
+        - itinerario_qa.estado: ['PLANIFICADO', 'ACTIVO', 'COMPLETADO', 'CANCELADO']
+        - aplicacion.estado: ['ACTIVA', 'EN_DESARROLLO', 'INACTIVA']
         """;
-    }
-    /**
-     * Método principal usado por el servicio
-     */
+
     public String getSchemaContext() {
-        try {
-            // Intentar obtener schema dinámico
-            return getOptimizedSchemaForPrompt();
-        } catch (Exception e) {
-            // Fallback al schema estático
-            return getStaticSchemaContext();
-        }
+        return databaseSchema;
+        // posibilidad de añadir el getDetailedSchema() al databaseSchema static
     }
+
 }
