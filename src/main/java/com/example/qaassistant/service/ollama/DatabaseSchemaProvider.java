@@ -142,9 +142,9 @@ public class DatabaseSchemaProvider {
         - itinerario 1:N actividad_qa
         
         ESTADOS VÁLIDOS:
-        - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'BLOQUEADA', 'CANCELADA']
+        - actividad_qa.estado: ['PENDIENTE', 'EN_PROGRESO', 'COMPLETADA', 'BLOQUEADA']
         - itinerario.estado: ['PLANIFICADO', 'ACTIVO', 'COMPLETADO', 'CANCELADO']
-        - aplicacion.estado: ['ACTIVA', 'EN_DESARROLLO', 'INACTIVA']
+        - aplicacion.estado: ['ACTIVA', 'EN_DESARROLLO', 'INACTIVA', 'MANTENIMIENTO']        
         """;
 
     public String getSchemaContext() {

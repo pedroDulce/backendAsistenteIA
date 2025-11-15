@@ -39,7 +39,7 @@ logging.level.com.example: DEBUG
 
 ollama:
   base-url: http://localhost:11434
-  default-model: codellama:7b # llama3.2:3b
+  default-model: sqlcoder:7b  # codellama:7b mejor que llama3.2:3b
   embedding:
     model: nomic-embed-text
   # Configuración de embeddings
