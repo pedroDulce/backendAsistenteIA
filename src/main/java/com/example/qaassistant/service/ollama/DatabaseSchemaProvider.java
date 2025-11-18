@@ -153,7 +153,7 @@ public class DatabaseSchemaProvider {
         """;
 
     public String getSchemaContext() {
-        return databaseSchema;
+        return getDetailedSchema();// + databaseSchema;
         // posibilidad de añadir el getDetailedSchema() al databaseSchema static
     }
 
