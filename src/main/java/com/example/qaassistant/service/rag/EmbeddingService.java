@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -39,13 +37,11 @@ public class EmbeddingService {
     private boolean cacheEnabled;
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
     private final ExecutorService executorService;
     private final Map<String, List<Float>> embeddingCache;
 
     public EmbeddingService() {
         this.restTemplate = new RestTemplate();
-        this.objectMapper = new ObjectMapper();
         this.executorService = Executors.newFixedThreadPool(4);
         this.embeddingCache = new ConcurrentHashMap<>();
     }
@@ -61,10 +57,21 @@ public class EmbeddingService {
         }
 
         // Getters y setters
-        public String getModel() { return model; }
-        public void setModel(String model) { this.model = model; }
-        public String getPrompt() { return prompt; }
-        public void setPrompt(String prompt) { this.prompt = prompt; }
+        public String getModel() {
+            return model;
+        }
+
+        public void setModel(String model) {
+            this.model = model;
+        }
+
+        public String getPrompt() {
+            return prompt;
+        }
+
+        public void setPrompt(String prompt) {
+            this.prompt = prompt;
+        }
     }
 
     // DTO para la respuesta de Ollama
@@ -73,10 +80,21 @@ public class EmbeddingService {
         private List<Float> embedding;
 
         // Getters y setters
-        public String getModel() { return model; }
-        public void setModel(String model) { this.model = model; }
-        public List<Float> getEmbedding() { return embedding; }
-        public void setEmbedding(List<Float> embedding) { this.embedding = embedding; }
+        public String getModel() {
+            return model;
+        }
+
+        public void setModel(String model) {
+            this.model = model;
+        }
+
+        public List<Float> getEmbedding() {
+            return embedding;
+        }
+
+        public void setEmbedding(List<Float> embedding) {
+            this.embedding = embedding;
+        }
     }
 
     /**
@@ -343,4 +361,3 @@ public class EmbeddingService {
         }
     }
 }
-

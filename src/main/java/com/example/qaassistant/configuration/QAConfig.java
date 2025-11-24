@@ -22,16 +22,15 @@ public class QAConfig {
     @Bean
     @Primary
     public EnhancedQAService enhancedQAService(CachedUnifiedQAService cachedUnifiedQAService,
-                                               QueryComplexityAnalyzer complexityAnalyzer,
-                                               OllamaService ollamaService) {
+            QueryComplexityAnalyzer complexityAnalyzer,
+            OllamaService ollamaService) {
         return new EnhancedQAService(cachedUnifiedQAService, complexityAnalyzer, ollamaService);
     }
 
     @Bean
     public RagService ragService(SimpleVectorStore vectorStoreService,
-                                 JdbcTemplate jdbcTemplate) {
-        return new RagService(vectorStoreService, jdbcTemplate);
+            JdbcTemplate jdbcTemplate) {
+        return new RagService(vectorStoreService);
     }
 
 }
-
