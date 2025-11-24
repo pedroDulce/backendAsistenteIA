@@ -23,7 +23,8 @@ public class UnifiedQueryResult {
     private String errorMessage;
 
     // Constructores
-    public UnifiedQueryResult() {}
+    public UnifiedQueryResult() {
+    }
 
     public static UnifiedQueryResult fromSQLResult(QueryResult sqlResult, QuestionIntent intent) {
         UnifiedQueryResult result = new UnifiedQueryResult();
@@ -32,7 +33,7 @@ public class UnifiedQueryResult {
         result.answer = sqlResult.getFormattedResults();
         result.generatedSQL = sqlResult.getGeneratedSQL();
         result.rawResults = sqlResult.getRawResults();
-        result.sources = new ArrayList();
+        result.sources = new ArrayList<>();
         result.success = sqlResult.isSuccess();
         result.suggestions = RagService.generateSuggestions(sqlResult.getOriginalQuestion());
         return result;
@@ -55,7 +56,7 @@ public class UnifiedQueryResult {
         result.intent = "UNKNOWN";
         result.answer = error;
         result.success = false;
-        result.sources = new ArrayList();
+        result.sources = new ArrayList<>();
         result.errorMessage = error;
         result.suggestions = RagService.generateSuggestions(question);
         return result;

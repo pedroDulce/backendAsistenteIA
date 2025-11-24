@@ -20,22 +20,20 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/qa-assistant")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = { "http://localhost:4200" })
 public class OllamaQAController {
 
     private static final Logger log = LoggerFactory.getLogger(OllamaQAController.class);
     private final AplicacionRepository aplicacionRepository;
-    private final CachedUnifiedQAService cachedUnifiedQAService;
     private final EnhancedQAService enhancedQAService;
 
-    public OllamaQAController(CachedUnifiedQAService cachedUnifiedQAService, AplicacionRepository aplicacionRepository,
-                              EnhancedQAService enhancedQAService) {
-        this.cachedUnifiedQAService = cachedUnifiedQAService;
+    public OllamaQAController(AplicacionRepository aplicacionRepository,
+            EnhancedQAService enhancedQAService) {
         this.aplicacionRepository = aplicacionRepository;
         this.enhancedQAService = enhancedQAService;
     }
-    
-    @PostMapping("/ask-enhanced")    //ask-enhanced
+
+    @PostMapping("/ask-enhanced") // ask-enhanced
     public ResponseEntity<UnifiedQueryResult> askEnhancedQuestion(@RequestBody ChatRequest request) {
         log.info("Procesando consulta mejorada: {}", request.getQuestion());
 
@@ -59,8 +57,7 @@ public class OllamaQAController {
         List<RankingDTO> ranking = results.stream()
                 .map(result -> new RankingDTO(
                         (Aplicacion) result[0],
-                        ((Double) result[1]).floatValue()
-                ))
+                        ((Double) result[1]).floatValue()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(ranking);
@@ -75,8 +72,7 @@ public class OllamaQAController {
                 new RankingDTO(new Aplicacion(2L, "API Test", "API de prueba",
                         "Equipo Backend", EstadoAplicacion.ACTIVA), 72.3f),
                 new RankingDTO(new Aplicacion(3L, "Mobile Test", "App móvil de prueba",
-                        "Equipo Mobile", EstadoAplicacion.ACTIVA), 63.8f)
-        );
+                        "Equipo Mobile", EstadoAplicacion.ACTIVA), 63.8f));
 
         return ResponseEntity.ok(testRanking);
     }

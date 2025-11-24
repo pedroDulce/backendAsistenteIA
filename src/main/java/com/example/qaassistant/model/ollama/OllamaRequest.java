@@ -1,8 +1,6 @@
 package com.example.qaassistant.model.ollama;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OllamaRequest {
@@ -12,7 +10,8 @@ public class OllamaRequest {
     private Options options;
 
     // Constructores
-    public OllamaRequest() {}
+    public OllamaRequest() {
+    }
 
     public OllamaRequest(String model, String prompt) {
         this.model = model;
@@ -21,17 +20,37 @@ public class OllamaRequest {
     }
 
     // Getters y Setters
-    public String getModel() { return model; }
-    public void setModel(String model) { this.model = model; }
+    public String getModel() {
+        return model;
+    }
 
-    public String getPrompt() { return prompt; }
-    public void setPrompt(String prompt) { this.prompt = prompt; }
+    public void setModel(String model) {
+        this.model = model;
+    }
 
-    public boolean isStream() { return stream; }
-    public void setStream(boolean stream) { this.stream = stream; }
+    public String getPrompt() {
+        return prompt;
+    }
 
-    public Options getOptions() { return options; }
-    public void setOptions(Options options) { this.options = options; }
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public boolean isStream() {
+        return stream;
+    }
+
+    public void setStream(boolean stream) {
+        this.stream = stream;
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+
+    public void setOptions(Options options) {
+        this.options = options;
+    }
 
     // Clase interna para Options
     public static class Options {
@@ -41,19 +60,40 @@ public class OllamaRequest {
         private Integer seed = 42;
 
         // Constructores
-        public Options() {}
+        public Options() {
+        }
 
         // Getters y Setters
-        public Double getTemperature() { return temperature; }
-        public void setTemperature(Double temperature) { this.temperature = temperature; }
+        public Double getTemperature() {
+            return temperature;
+        }
 
-        public Integer getTopK() { return topK; }
-        public void setTopK(Integer topK) { this.topK = topK; }
+        public void setTemperature(Double temperature) {
+            this.temperature = temperature;
+        }
 
-        public Double getTopP() { return topP; }
-        public void setTopP(Double topP) { this.topP = topP; }
+        public Integer getTopK() {
+            return topK;
+        }
 
-        public Integer getSeed() { return seed; }
-        public void setSeed(Integer seed) { this.seed = seed; }
+        public void setTopK(Integer topK) {
+            this.topK = topK;
+        }
+
+        public Double getTopP() {
+            return topP;
+        }
+
+        public void setTopP(Double topP) {
+            this.topP = topP;
+        }
+
+        public Integer getSeed() {
+            return seed;
+        }
+
+        public void setSeed(Integer seed) {
+            this.seed = seed;
+        }
     }
 }

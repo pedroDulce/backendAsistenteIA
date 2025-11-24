@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.*;
 
 @Service
@@ -14,12 +13,10 @@ public class RagService {
 
     private static final Logger log = LoggerFactory.getLogger(RagService.class);
     private final SimpleVectorStore vectorStore;
-    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public RagService(SimpleVectorStore vectorStore, JdbcTemplate jdbcTemplate) {
+    public RagService(SimpleVectorStore vectorStore) {
         this.vectorStore = vectorStore;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     public RagResponse processQuestion(String question) {
@@ -38,9 +35,7 @@ public class RagService {
                 "Ver ranking completo",
                 "Listar todas las aplicaciones",
                 "Mostrar actividades recientes",
-                "Consultar itinerarios activos"
-        );
+                "Consultar itinerarios activos");
     }
 
 }
-
